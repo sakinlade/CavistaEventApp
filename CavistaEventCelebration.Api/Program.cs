@@ -1,3 +1,6 @@
+using CavistaEventCelebration.Application.Implementations;
+using CavistaEventCelebration.Application.Interfaces;
+using CavistaEventCelebration.Domain.EmailService;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,8 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 // Add services to the container
+builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
