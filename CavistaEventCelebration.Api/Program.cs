@@ -32,9 +32,11 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString)));
 
 var app = builder.Build();
 
