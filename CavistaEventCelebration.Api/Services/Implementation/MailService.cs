@@ -1,10 +1,10 @@
-﻿using CavistaEventCelebration.Application.Interfaces;
-using CavistaEventCelebration.Domain.EmailService;
+﻿using CavistaEventCelebration.Api.Models.EmailService;
+using CavistaEventCelebration.Api.Services.Interface;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace CavistaEventCelebration.Application.Implementations
+namespace CavistaEventCelebration.Api.Services.implementation
 {
     public class MailService : IMailService
     {
@@ -13,6 +13,7 @@ namespace CavistaEventCelebration.Application.Implementations
         {
             Mail_Settings = options.Value;
         }
+
         public bool SendMail(MailData Mail_Data)
         {
             try
