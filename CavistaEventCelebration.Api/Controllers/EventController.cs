@@ -1,4 +1,6 @@
 ﻿using CavistaEventCelebration.Api.Models;
+using CavistaEventCelebration.Api.Models.EmailService;
+using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CavistaEventCelebration.Api.Controllers;
@@ -7,8 +9,15 @@ namespace CavistaEventCelebration.Api.Controllers;
 [Route("[controller]")]
 public class EventController : ControllerBase
 {
+    private readonly IMailService _mailService;
 
-    [HttpGet(Name = "GetEvent")]
+    public EventController(IMailService mailService)
+    {
+        _mailService = mailService;
+    }
+
+
+    [HttpGet("GetEvent")]
     public IEnumerable<Event> Get()
     {
         //return Enumerable.Range(1, 5).Select(index =>
@@ -20,6 +29,12 @@ public class EventController : ControllerBase
         //    .ToArray();
 
         return null;
+    }
+
+    [HttpPost("send-Email")]
+    public bool SendMail(MailData Mail_Data)
+    {
+        return _mailService.SendMail(Mail_Data);
     }
 }
 

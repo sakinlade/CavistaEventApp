@@ -1,6 +1,12 @@
 using CavistaEventCelebration.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using CavistaEventCelebration.Api.Models.EmailService;
+using CavistaEventCelebration.Api.Services.Interface;
+using CavistaEventCelebration.Api.Services.implementation;
+using CavistaEventCelebration.Api.Services.Implementation;
+using CavistaEventCelebration.Api.Repositories.Interface;
+using CavistaEventCelebration.Api.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +17,12 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(int.Parse(port));
 });
 
-// Add services to the container
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
