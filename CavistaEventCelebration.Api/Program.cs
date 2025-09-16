@@ -10,7 +10,6 @@ using CavistaEventCelebration.Api.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Configure Kestrel to listen on Render's injected PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.ConfigureKestrel(options =>
 {
