@@ -1,12 +1,15 @@
 using CavistaEventCelebration.Api.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.EmailService;
-using CavistaEventCelebration.Api.Services.Interface;
+using CavistaEventCelebration.Api.Repositories.Implementation;
+using CavistaEventCelebration.Api.Repositories.Interface;
 using CavistaEventCelebration.Api.Services.implementation;
 using CavistaEventCelebration.Api.Services.Implementation;
-using CavistaEventCelebration.Api.Repositories.Interface;
-using CavistaEventCelebration.Api.Repositories.Implementation;
+using CavistaEventCelebration.Api.Services.Interface;
+using Microsoft.AspNetCore.Identity;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,17 +46,18 @@ if (string.IsNullOrEmpty(connectionString))
 Console.WriteLine($"DB Connection: {connectionString}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+     options.UseNpgsql(connectionString));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
-
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
-
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
