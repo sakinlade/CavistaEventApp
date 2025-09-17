@@ -20,7 +20,7 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddTransient<IMailService, MailService>();
-builder.Services.AddTransient<IMailService, MailService>();
+
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -36,7 +36,7 @@ var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"
                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString)));
+     options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
