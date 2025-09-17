@@ -1,18 +1,25 @@
-using CavistaEventCelebration.Application.Implementations;
-using CavistaEventCelebration.Application.Interfaces;
-using CavistaEventCelebration.Domain.EmailService;
+using CavistaEventCelebration.Api.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using CavistaEventCelebration.Api.Models.EmailService;
+using CavistaEventCelebration.Api.Services.Interface;
+using CavistaEventCelebration.Api.Services.implementation;
+using CavistaEventCelebration.Api.Services.Implementation;
+using CavistaEventCelebration.Api.Repositories.Interface;
+using CavistaEventCelebration.Api.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Configure Kestrel to listen on Render's injected PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port));
 });
 
-// Add services to the container
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 builder.Services.AddControllers();
@@ -25,8 +32,19 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString)));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();   // this ensures migrations run
+}
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

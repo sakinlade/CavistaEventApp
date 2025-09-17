@@ -1,4 +1,4 @@
-﻿namespace CavistaEventCelebration.Domain.EmailService
+﻿namespace CavistaEventCelebration.Api.Models.EmailService
 {
     public class MailData
     {
