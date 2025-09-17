@@ -1,4 +1,6 @@
-﻿namespace CavistaEventCelebration.Api.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace CavistaEventCelebration.Api.Models
 {
     public class Employee
     {
@@ -7,5 +9,6 @@
         public string LastName { get; set; }
         public string EmailAddress { get; set; }
         public bool IsDeprecated { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }   
     }
 }
