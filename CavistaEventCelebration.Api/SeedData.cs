@@ -49,7 +49,6 @@ namespace CavistaEventCelebration.Api
                     FirstName = "Spark",
                     LastName = "Hub",
                     EmailAddress = user.Email,
-                    ApplicationUser = user
                 });
 
 

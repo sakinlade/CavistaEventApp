@@ -9,6 +9,5 @@ namespace CavistaEventCelebration.Api.Models
         public string LastName { get; set; }
         public string EmailAddress { get; set; }
         public bool IsDeprecated { get; set; } = false;
-        public ApplicationUser? ApplicationUser { get; set; }
     }
 }
