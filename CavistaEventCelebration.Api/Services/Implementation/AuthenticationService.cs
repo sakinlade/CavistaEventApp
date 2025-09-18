@@ -77,7 +77,6 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                             FirstName = model.FirstName,
                             LastName = model.LastName,
                             EmailAddress = model.Email,
-                            ApplicationUser = user,
                         };
 
                        if(await _roleManager.RoleExistsAsync("User"))
