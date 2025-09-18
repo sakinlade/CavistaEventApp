@@ -17,7 +17,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();   //this ensures migrations run
+    db.Database.Migrate();
 }
 
 app.UseSwagger();
@@ -36,7 +36,6 @@ app.UseCors(ServiceRegistraion.policyName);
 app.UseAuthentication();
 
 app.UseAuthorization();
-
 app.MapControllers();
 
 var serviceprovider = app.Services.CreateScope().ServiceProvider;

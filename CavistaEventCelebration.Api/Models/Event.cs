@@ -4,6 +4,6 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public bool IsDeprecated { get; set; }
+        public bool IsDeprecated { get; set; } = false;
     }
 }
