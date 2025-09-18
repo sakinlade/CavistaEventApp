@@ -44,14 +44,6 @@ namespace CavistaEventCelebration.Api
                     SecurityStamp = Guid.NewGuid().ToString("D")
                 };
 
-                await context.Employees.AddAsync(new Employee
-                {
-                    FirstName = "Spark",
-                    LastName = "Hub",
-                    EmailAddress = user.Email,
-                });
-
-
                 if (!context.Users.Any(u => u.UserName == user.UserName))
                 {
                     var password = new PasswordHasher<ApplicationUser>();
@@ -61,11 +53,18 @@ namespace CavistaEventCelebration.Api
                     var userStore = new UserStore<ApplicationUser, IdentityRole<Guid>, AppDbContext, Guid>(context);
                     var result = userStore.CreateAsync(user);
 
+
+                    await context.Employees.AddAsync(new Employee
+                    {
+                        FirstName = "Spark",
+                        LastName = "Hub",
+                        EmailAddress = user.Email,
+                    });
+
+                    await AssignRoles(serviceProvider, user.Email, roles);
+
+                    await context.SaveChangesAsync();
                 }
-
-                await AssignRoles(serviceProvider, user.Email, roles);
-
-                await context.SaveChangesAsync();
             }
         }
 

@@ -51,6 +51,35 @@ namespace CavistaEventCelebration.Api
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
             //            .AddEntityFrameworkStores<AppDbContext>();
 
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("Cavista Event Celebration API v1", new OpenApiInfo { Title = "Cavista Event Celebration API", Version = "v1" });
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
+
             //Add JWT authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
