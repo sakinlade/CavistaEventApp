@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CavistaEventCelebration.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250917101139_initialMigration")]
+    [Migration("20250918132903_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />

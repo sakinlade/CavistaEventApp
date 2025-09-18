@@ -1,15 +1,6 @@
+using CavistaEventCelebration.Api;
 using CavistaEventCelebration.Api.Data;
-using CavistaEventCelebration.Api.Models;
-using CavistaEventCelebration.Api.Models.EmailService;
-using CavistaEventCelebration.Api.Repositories.Implementation;
-using CavistaEventCelebration.Api.Repositories.Interface;
-using CavistaEventCelebration.Api.Services.implementation;
-using CavistaEventCelebration.Api.Services.Implementation;
-using CavistaEventCelebration.Api.Services.Interface;
-using Microsoft.AspNetCore.Identity;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,31 +10,7 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(int.Parse(port));
 });
 
-
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddTransient<IMailService, MailService>();
-
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Cavista Event Celebration API",
-        Version = "v1"
-    });
-});
-
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-     options.UseNpgsql(connectionString));
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<AppDbContext>();
+builder.AddServices();
 
 var app = builder.Build();
 
@@ -64,8 +31,17 @@ if (!app.Environment.IsProduction())
     app.UseHttpsRedirection();
 }
 
+app.UseCors(ServiceRegistraion.policyName);
+
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+var serviceprovider = app.Services.CreateScope().ServiceProvider;
+
+if(serviceprovider != null)
+      await SeedData.Initialize(serviceprovider);
 
 app.Run();
