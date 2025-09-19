@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CavistaEventCelebration.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250919095432_UpdateEventDateToTimestamptz")]
-    partial class UpdateEventDateToTimestamptz
+    [Migration("20250919132203_newmigration")]
+    partial class newmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace CavistaEventCelebration.Api.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -49,6 +52,9 @@ namespace CavistaEventCelebration.Api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
@@ -68,6 +74,12 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -81,6 +93,7 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
+                        .IsUnique()
                         .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
@@ -128,8 +141,8 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("EventDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("EventId")
                         .HasColumnType("integer");

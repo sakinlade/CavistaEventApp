@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CavistaEventCelebration.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class newinitialcreate : Migration
+    public partial class newmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,10 @@ namespace CavistaEventCelebration.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -60,7 +64,7 @@ namespace CavistaEventCelebration.Api.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
                     EventId = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EventDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -242,7 +246,8 @@ namespace CavistaEventCelebration.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
-                column: "NormalizedEmail");
+                column: "NormalizedEmail",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
