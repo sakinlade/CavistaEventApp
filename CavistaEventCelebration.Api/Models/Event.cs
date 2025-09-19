@@ -2,7 +2,7 @@
 {
     public class Event
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public bool IsDeprecated { get; set; } = false;
     }

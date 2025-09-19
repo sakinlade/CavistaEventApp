@@ -4,10 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CavistaEventCelebration.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class newinitialcreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,8 +59,8 @@ namespace CavistaEventCelebration.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Date = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -67,10 +69,26 @@ namespace CavistaEventCelebration.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Events",
+                name: "Employees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    EmailAddress = table.Column<string>(type: "text", nullable: false),
+                    IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -185,26 +203,14 @@ namespace CavistaEventCelebration.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "Events",
+                columns: new[] { "Id", "IsDeprecated", "Name" },
+                values: new object[,]
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    EmailAddress = table.Column<string>(type: "text", nullable: false),
-                    IsDeprecated = table.Column<bool>(type: "boolean", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Employees_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    { 1, false, "Birthday" },
+                    { 2, false, "Work Anniversary" },
+                    { 3, false, "Wedding Anniversary" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -243,11 +249,6 @@ namespace CavistaEventCelebration.Api.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_ApplicationUserId",
-                table: "Employees",
-                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_EmailAddress",

@@ -1,4 +1,5 @@
-﻿using CavistaEventCelebration.Api.Models;
+﻿using System.Reflection.Emit;
+using CavistaEventCelebration.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,17 @@ namespace CavistaEventCelebration.Api.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Employee>().HasIndex(e => e.EmailAddress).IsUnique(true);
+            builder.Entity<Event>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                      .ValueGeneratedOnAdd();
+                entity.HasData(
+                    new Event { Id = 1, Name = "Birthday" },
+            new Event { Id = 2, Name = "Work Anniversary" },
+            new Event { Id = 3, Name = "Wedding Anniversary" }
+                    );
+            });
         }
 
     }

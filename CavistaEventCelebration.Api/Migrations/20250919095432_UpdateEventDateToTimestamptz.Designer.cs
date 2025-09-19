@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CavistaEventCelebration.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250917101139_initialMigration")]
-    partial class initialMigration
+    [Migration("20250919095432_UpdateEventDateToTimestamptz")]
+    partial class UpdateEventDateToTimestamptz
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,9 +96,6 @@ namespace CavistaEventCelebration.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("text");
@@ -116,8 +113,6 @@ namespace CavistaEventCelebration.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("EmailAddress")
                         .IsUnique();
 
@@ -130,14 +125,14 @@ namespace CavistaEventCelebration.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Date")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeprecated")
                         .HasColumnType("boolean");
@@ -149,9 +144,11 @@ namespace CavistaEventCelebration.Api.Migrations
 
             modelBuilder.Entity("CavistaEventCelebration.Api.Models.Event", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsDeprecated")
                         .HasColumnType("boolean");
@@ -163,6 +160,26 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsDeprecated = false,
+                            Name = "Birthday"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsDeprecated = false,
+                            Name = "Work Anniversary"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDeprecated = false,
+                            Name = "Wedding Anniversary"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -293,17 +310,6 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("CavistaEventCelebration.Api.Models.Employee", b =>
-                {
-                    b.HasOne("CavistaEventCelebration.Api.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
