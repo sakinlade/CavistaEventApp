@@ -1,16 +1,17 @@
+using CavistaEventCelebration.Api;
 using CavistaEventCelebration.Api.Data;
 using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.EmailService;
 using CavistaEventCelebration.Api.Repositories.Implementation;
 using CavistaEventCelebration.Api.Repositories.Interface;
-using CavistaEventCelebration.Api.Services.implementation;
 using CavistaEventCelebration.Api.Services.Implementation;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Identity;
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Hangfire;
+using Hangfire.PostgreSql;
+using CavistaEventCelebration.Api.Services.implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,7 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(int.Parse(port));
 });
 
-// Services
+// Dependency Injection
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEventRepo, EventRepo>();
@@ -28,6 +29,7 @@ builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IEventCelebrationService, EventCelebrationService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 
+// Controllers & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -39,7 +41,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
+// DB
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -56,9 +58,20 @@ builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(connectionString));
 builder.Services.AddHangfireServer();
 
+var corsPolicyName = "AllowAll";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
-
+// Migrate DB
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -66,15 +79,18 @@ using (var scope = app.Services.CreateScope())
 
     var notificationService = scope.ServiceProvider.GetRequiredService<IEventCelebrationService>();
     notificationService.RegisterRecurringJobsAsync().GetAwaiter().GetResult();
+    await SeedData.Initialize(scope.ServiceProvider);
 }
 
-if (!app.Environment.IsProduction())
+
+if (app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
 }
 
 app.UseRouting();
-//app.UseAuthentication();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSwagger();
@@ -85,5 +101,8 @@ app.UseSwaggerUI(c =>
 
 app.UseHangfireDashboard("/eventjobs");
 
+
+app.UseCors(corsPolicyName);
 app.MapControllers();
+
 app.Run();

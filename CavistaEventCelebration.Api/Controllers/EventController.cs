@@ -1,6 +1,7 @@
 ﻿using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.EmailService;
 using CavistaEventCelebration.Api.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CavistaEventCelebration.Api.Controllers;
@@ -31,6 +32,7 @@ public class EventController : ControllerBase
         return null;
     }
 
+    [Authorize(Roles = "SuperAdmin")]
     [HttpPost("send-Email")]
     public bool SendMail(MailData Mail_Data)
     {

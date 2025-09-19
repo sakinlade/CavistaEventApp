@@ -28,6 +28,10 @@ namespace CavistaEventCelebration.Api.Data
             new Event { Id = 3, Name = "Wedding Anniversary" }
                     );
             });
+            builder.Entity<ApplicationUser>(b =>
+            {
+                b.HasIndex(u => u.NormalizedEmail).HasDatabaseName("EmailIndex").IsUnique();
+            });
         }
 
     }
