@@ -4,10 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CavistaEventCelebration.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class newmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,8 +63,8 @@ namespace CavistaEventCelebration.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Date = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    EventDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -89,7 +91,8 @@ namespace CavistaEventCelebration.Api.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     IsDeprecated = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -202,6 +205,16 @@ namespace CavistaEventCelebration.Api.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Events",
+                columns: new[] { "Id", "IsDeprecated", "Name" },
+                values: new object[,]
+                {
+                    { 1, false, "Birthday" },
+                    { 2, false, "Work Anniversary" },
+                    { 3, false, "Wedding Anniversary" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -135,14 +135,14 @@ namespace CavistaEventCelebration.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Date")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
+                    b.Property<DateOnly>("EventDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeprecated")
                         .HasColumnType("boolean");
@@ -154,9 +154,11 @@ namespace CavistaEventCelebration.Api.Migrations
 
             modelBuilder.Entity("CavistaEventCelebration.Api.Models.Event", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsDeprecated")
                         .HasColumnType("boolean");
@@ -168,6 +170,26 @@ namespace CavistaEventCelebration.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsDeprecated = false,
+                            Name = "Birthday"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsDeprecated = false,
+                            Name = "Work Anniversary"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDeprecated = false,
+                            Name = "Wedding Anniversary"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
