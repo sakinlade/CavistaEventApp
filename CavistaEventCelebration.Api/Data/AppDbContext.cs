@@ -16,6 +16,10 @@ namespace CavistaEventCelebration.Api.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Employee>().HasIndex(e => e.EmailAddress).IsUnique(true);
+            builder.Entity<ApplicationUser>(b =>
+            {
+                b.HasIndex(u => u.NormalizedEmail).HasDatabaseName("EmailIndex").IsUnique();
+            });
         }
 
     }
