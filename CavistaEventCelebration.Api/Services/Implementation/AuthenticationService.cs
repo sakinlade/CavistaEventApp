@@ -3,11 +3,10 @@ using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.Authentication;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CavistaEventCelebration.Api.Services.Implementation
@@ -30,30 +29,37 @@ namespace CavistaEventCelebration.Api.Services.Implementation
         }
 
         public async Task<LoginResponse> LoginAsync(UserLoginModel model)
-        {          
-            var userName = model.Email;
-            var user = await _userManager.FindByEmailAsync(model.Email);          
-
-            if (user != null)
+        {
+            try
             {
-                userName = user.UserName;
-            }
+                var userName = model.Email;
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (!string.IsNullOrWhiteSpace(userName))
-            {
-                var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
+                if (user != null)
                 {
-                    var dateExpire = DateTime.Now.AddMinutes(60);
-                    var token = GenerateAccessToken(model.Email, dateExpire);
-
-                    return new LoginResponse { Success = true, AccessToken = new JwtSecurityTokenHandler().WriteToken(token) };
+                    userName = user.UserName;
                 }
-            }
 
-       
-            return new LoginResponse { Success = false};            
+                if (user != null && !string.IsNullOrWhiteSpace(userName))
+                {
+                    var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (result.Succeeded)
+                    {
+                        var dateExpire = DateTime.Now.AddMinutes(60);
+                        var token = GenerateAccessToken(user.UserName, model.Email, roles, dateExpire);
+
+                        return new LoginResponse { Success = true, Message = "Login successful", AccessToken = new JwtSecurityTokenHandler().WriteToken(token) };
+                    }
+                }
+
+                return new LoginResponse { Success = false };
+            }
+            catch (Exception)
+            {
+
+                return new LoginResponse { Success = false, Message = "Internal server error" };
+            }                      
         }
 
         public async Task<SignInResponse> CreateAsync(UserSignInModel model)
@@ -103,14 +109,16 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             }         
         }
 
-        private JwtSecurityToken GenerateAccessToken(string userName, DateTime? expiry)
-        {
+        private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)
+        {         
             // Create user claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName),
-                // Add additional claims as needed (e.g., roles, etc.)
+                new Claim(ClaimTypes.Email, email),
              };
+
+            claims.AddRange(roles.Select(x =>  new Claim(ClaimTypes.Role, x)).ToList());
 
             // Create a JWT
             var token = new JwtSecurityToken(
@@ -119,7 +127,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                 claims: claims,
                 expires: expiry, // Token expiration time
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"])),
-                    SecurityAlgorithms.HmacSha256)
+                SecurityAlgorithms.HmacSha256)
             );
 
             return token;

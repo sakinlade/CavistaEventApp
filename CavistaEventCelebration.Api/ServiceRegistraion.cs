@@ -35,26 +35,8 @@ namespace CavistaEventCelebration.Api
                     Title = "Cavista Event Celebration API",
                     Version = "v1"
                 });
-            });
 
-            var configuration = builder.Configuration;
-            var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                                  ?? configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                 options.UseNpgsql(connectionString));
-
-            builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
-            .AddRoles<IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<AppDbContext>();
-
-            //builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-            //            .AddEntityFrameworkStores<AppDbContext>();
-
-            builder.Services.AddSwaggerGen(opt =>
-            {
-                opt.SwaggerDoc("Cavista Event Celebration API v1", new OpenApiInfo { Title = "Cavista Event Celebration API", Version = "v1" });
-                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
                     Description = "Please enter token",
@@ -64,7 +46,7 @@ namespace CavistaEventCelebration.Api
                     Scheme = "bearer"
                 });
 
-                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -80,6 +62,17 @@ namespace CavistaEventCelebration.Api
                 });
             });
 
+            var configuration = builder.Configuration;
+            var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                                  ?? configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                 options.UseNpgsql(connectionString));
+
+            builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>();
+
             //Add JWT authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -92,11 +85,13 @@ namespace CavistaEventCelebration.Api
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = configuration["JwtSettings:Issuer"],
                         ValidAudience = configuration["JwtSettings:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"])
+                        )
                     };
+                    options.IncludeErrorDetails = true;
                 });
 
-            
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(name: policyName, builder =>

@@ -32,7 +32,7 @@ public class EventController : ControllerBase
         return null;
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "SuperAdmin")]
     [HttpPost("send-Email")]
     public bool SendMail(MailData Mail_Data)
     {
