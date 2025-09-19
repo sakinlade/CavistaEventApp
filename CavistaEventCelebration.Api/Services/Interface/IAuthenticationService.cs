@@ -9,5 +9,6 @@ namespace CavistaEventCelebration.Api.Services.Interface
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
         Task<LoginResponse> LoginAsync(UserLoginModel model);
+        Task<LoginResponse> RefreshTokenAsync(RefreshTokenModel refreshTokenModel);
     }
 }

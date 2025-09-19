@@ -4,7 +4,9 @@ using CavistaEventCelebration.Api.Models.Authentication;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -120,6 +122,47 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             }         
         }
 
+        public async Task<LoginResponse> RefreshTokenAsync(RefreshTokenModel refreshTokenModel)
+        {
+            try
+            {
+                string accessToken = refreshTokenModel.AccessToken;
+                string refreshToken = refreshTokenModel.RefreshToken;
+
+                var principal = GetPrincipalFromExpiredToken(accessToken);
+                var username = principal.Identity.Name; //this is mapped to the Name claim by default
+
+                if (username != null)
+                {
+                    var user = await _userManager.FindByNameAsync(username);
+
+                    if (user != null)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        var dateExpire = DateTime.Now.AddMinutes(60);
+                        string email = user.Email ?? string.Empty;
+
+                        var newAccessToken = GenerateAccessToken(username, email, roles, dateExpire);
+                        var newRefreshToken = GenerateRefreshToken();
+                       
+                        user.RefreshToken = newRefreshToken;
+
+                        await _dbContext.SaveChangesAsync();
+
+                        return new LoginResponse { Success = true, Message = "Login successful", AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken), Expiry = dateExpire, RefreshToken = newRefreshToken };
+                    }
+
+                    return new LoginResponse { Success = false, Message = "Invalid client request" };
+                }
+
+                return new LoginResponse { Success = false, Message = "Invalid client request" };
+            }
+            catch (Exception ex)
+            {
+                return new LoginResponse { Success = false, Message = "Internal server error" };
+            }
+        }
+
         private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)
         {         
             // Create user claims
@@ -161,7 +204,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                 ValidateAudience = false, //you might want to validate the audience and issuer depending on your use case
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345")),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"])),
                 ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
             };
             var tokenHandler = new JwtSecurityTokenHandler();

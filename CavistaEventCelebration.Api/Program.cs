@@ -26,6 +26,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEventRepo, EventRepo>();
 builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IEventCelebrationService, EventCelebrationService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 
@@ -81,7 +83,6 @@ using (var scope = app.Services.CreateScope())
     notificationService.RegisterRecurringJobsAsync().GetAwaiter().GetResult();
     await SeedData.Initialize(scope.ServiceProvider);
 }
-
 
 if (app.Environment.IsProduction())
 {

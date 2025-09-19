@@ -51,11 +51,11 @@ namespace CavistaEventCelebration.Api.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] UserLoginModel userModel)
+        public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
         {
-            if (userModel != null)
+            if (refreshTokenModel != null)
             {
-                var result = await _authenticationService.LoginAsync(userModel);
+                var result = await _authenticationService.RefreshTokenAsync(refreshTokenModel);
 
                 if (result != null && result.Success)
                 {
