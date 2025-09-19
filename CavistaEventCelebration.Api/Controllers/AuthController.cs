@@ -49,5 +49,23 @@ namespace CavistaEventCelebration.Api.Controllers
 
             return BadRequest();
         }
+
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] UserLoginModel userModel)
+        {
+            if (userModel != null)
+            {
+                var result = await _authenticationService.LoginAsync(userModel);
+
+                if (result != null && result.Success)
+                {
+                    return Ok(result);
+                }
+
+                return BadRequest(result);
+            }
+
+            return BadRequest();
+        }
     }
 }
