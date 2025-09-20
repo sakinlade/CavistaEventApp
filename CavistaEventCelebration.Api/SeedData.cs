@@ -14,7 +14,7 @@ namespace CavistaEventCelebration.Api
             if (context != null)
             {
 
-                string[] roles = new string[] { "User", "People", "SuperAdmin" };
+                string[] roles = new string[] { "User", "People", "Admin", "SuperAdmin" };
 
                 foreach (string role in roles)
                 {

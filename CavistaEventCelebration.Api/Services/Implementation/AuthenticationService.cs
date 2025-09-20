@@ -4,8 +4,10 @@ using CavistaEventCelebration.Api.Models.Authentication;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Claims;
@@ -47,7 +49,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                 {                   
                     var refreshToken = GenerateRefreshToken();
                     user.RefreshToken = refreshToken;
-                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7).ToUniversalTime();
+                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(60).ToUniversalTime();
                     var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: false);
                     var roles = await _userManager.GetRolesAsync(user);
                     if (result.Succeeded && await _dbContext.SaveChangesAsync() > 0)
@@ -143,6 +145,9 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                         var dateExpire = DateTime.Now.AddMinutes(60);
                         string email = user.Email ?? string.Empty;
 
+                        if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                                return new LoginResponse { Success = false, Message = "Invalid refresh token or refresh token has expired" };
+
                         var newAccessToken = GenerateAccessToken(username, email, roles, dateExpire);
                         var newRefreshToken = GenerateRefreshToken();
                        
@@ -180,6 +185,33 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             }
 
             return new ChangePasswordResponse { Success = false, Message = "User not found" }; ;            
+        }
+
+        public async Task<ChangeUserRoleResponse> ChangeUserRoleAsync(string userId, ChangeUserRole changeUserRole)
+        {
+            var oldUser = await _userManager.FindByIdAsync(userId.ToString());
+            if (oldUser != null)
+            {
+                var userHasRole = await _userManager.IsInRoleAsync(oldUser, changeUserRole.Role);
+                var roleExist = await _roleManager.RoleExistsAsync(changeUserRole.Role);
+
+                if (!userHasRole && roleExist)
+                {
+                    var userRoles = await _userManager.GetRolesAsync(oldUser);                  
+
+                    if(userRoles != null)
+                        await _userManager.RemoveFromRolesAsync(oldUser, userRoles);
+
+                    var result =  await _userManager.AddToRoleAsync(oldUser, changeUserRole.Role);
+
+                    if (result.Succeeded)
+                        return new ChangeUserRoleResponse { Success = true, Message = "User role updated successfully" };
+                }         
+
+                return new ChangeUserRoleResponse { Success = false, Message = "Role exist for user or role does not exist"};
+            }
+
+            return new ChangeUserRoleResponse { Success = false, Message = "User not found" }; ;
         }
 
         private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)
