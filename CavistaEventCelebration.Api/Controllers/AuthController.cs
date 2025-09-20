@@ -12,7 +12,7 @@ namespace CavistaEventCelebration.Api.Controllers
 
         public AuthController(IAuthenticationService authentication)
         {
-            this._authenticationService = authentication;
+            _authenticationService = authentication;
         }
 
         [HttpPost("Signup")]
@@ -69,7 +69,7 @@ namespace CavistaEventCelebration.Api.Controllers
         }
 
         [HttpPost("ChangePassword/{userId}")]
-        public async Task<ActionResult<LoginResponse>> ChangePassword([FromBody] ChangePassword changePasswordModel,  string userId)
+        public async Task<ActionResult<ChangePasswordResponse>> ChangePassword([FromBody] ChangePassword changePasswordModel,  string userId)
         {
             if (changePasswordModel != null)
             {
@@ -87,7 +87,7 @@ namespace CavistaEventCelebration.Api.Controllers
         }
 
         [HttpPost("ChangeUserRole/{userId}")]
-        public async Task<ActionResult<LoginResponse>> ChangeUserRole([FromBody] ChangeUserRole changeUserRoleModel, string userId)
+        public async Task<ActionResult<ChangeUserRoleResponse>> ChangeUserRole([FromBody] ChangeUserRole changeUserRoleModel, string userId)
         {
             if (changeUserRoleModel != null)
             {
@@ -102,6 +102,19 @@ namespace CavistaEventCelebration.Api.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("GetRoles")]
+        public async Task<ActionResult<List<GetRolesResponse>>> GetRoles()
+        {
+            var result = await _authenticationService.GetRolesAsync();
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

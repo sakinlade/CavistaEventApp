@@ -10,6 +10,7 @@ namespace CavistaEventCelebration.Api.Services.Interface
         Task<SignInResponse> CreateAsync(UserSignInModel model);
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+        Task<List<GetRolesResponse>> GetRolesAsync();
         Task<LoginResponse> LoginAsync(UserLoginModel model);
         Task<LoginResponse> RefreshTokenAsync(RefreshTokenModel refreshTokenModel);
     }

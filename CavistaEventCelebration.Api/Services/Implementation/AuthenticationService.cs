@@ -214,6 +214,17 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             return new ChangeUserRoleResponse { Success = false, Message = "User not found" }; ;
         }
 
+        public async Task<List<GetRolesResponse>> GetRolesAsync()
+        {
+            var roles = _roleManager.Roles.Where(r => r.Name != null).Select(r => new GetRolesResponse
+            {
+                Id = r.Id,
+                Name = r.Name
+            }).ToList();
+
+            return await Task.FromResult(roles);
+        }
+
         private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)
         {         
             // Create user claims
