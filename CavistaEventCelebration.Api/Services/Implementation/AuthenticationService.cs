@@ -228,7 +228,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
         public async Task<PaginatedList<UserResponse>> GetUsersAsync(int? index, int? pageSize, string? searchString)
         {
             var userResp = new List<UserResponse>();
-            var result = new PaginatedList<UserResponse>(userResp, 0, 0 ,0);
+            var result = new PaginatedList<UserResponse>(userResp, 0, 1 ,10);
 
             var users = _userManager.Users.Join(_dbContext.Employees, u => u.Email, e => e.EmailAddress, (u, e) => new UserResponse
             {
