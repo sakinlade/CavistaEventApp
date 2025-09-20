@@ -41,13 +41,15 @@ namespace CavistaEventCelebration.Api
                     PhoneNumber = "+111111111111",
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString("D")
+                    SecurityStamp = Guid.NewGuid().ToString("D"),
+                    CreatedOn = DateTime.Now.ToUniversalTime(),
+                    ModifiedOn = DateTime.Now.ToUniversalTime(),
                 };
 
                 if (!context.Users.Any(u => u.UserName == user.UserName))
                 {
                     var password = new PasswordHasher<ApplicationUser>();
-                    var hashed = password.HashPassword(user, "SparkHubSecret");
+                    var hashed = password.HashPassword(user, "SparkHub123@Admin");
                     user.PasswordHash = hashed;
 
                     var userStore = new UserStore<ApplicationUser, IdentityRole<Guid>, AppDbContext, Guid>(context);

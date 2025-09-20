@@ -3,6 +3,7 @@ using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.Authentication;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System.IdentityModel.Tokens.Jwt;
@@ -58,7 +59,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                     }
                 }
 
-                return new LoginResponse { Success = false };
+                return new LoginResponse { Success = false, Message = "Wrong email or password" };
             }
             catch (Exception)
             {
@@ -161,6 +162,24 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             {
                 return new LoginResponse { Success = false, Message = "Internal server error" };
             }
+        }
+
+        public async Task<ChangePasswordResponse> ChangePasswordAsync(string userId, ChangePassword changePassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user != null) 
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var result = await _userManager.ResetPasswordAsync(user, token, changePassword.NewPassword);
+
+                if (result.Succeeded)
+                    return new ChangePasswordResponse { Success = true, Message = "Password change was successful" };
+
+                return new ChangePasswordResponse { Success = false, Message = "Password change was Unsuccessful", Errors = result.Errors.Select(x => x.Description).ToList() };
+            }
+
+            return new ChangePasswordResponse { Success = false, Message = "User not found" }; ;            
         }
 
         private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)

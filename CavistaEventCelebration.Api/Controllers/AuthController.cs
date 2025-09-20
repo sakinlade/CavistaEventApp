@@ -67,5 +67,23 @@ namespace CavistaEventCelebration.Api.Controllers
 
             return BadRequest();
         }
+
+        [HttpPost("ChangePassword/{id}")]
+        public async Task<ActionResult<LoginResponse>> ChangePassword([FromBody] ChangePassword refreshTokenModel,  string id)
+        {
+            if (refreshTokenModel != null)
+            {
+                var result = await _authenticationService.ChangePasswordAsync(id, refreshTokenModel);
+
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+
+                return BadRequest(result);
+            }
+
+            return BadRequest();
+        }
     }
 }

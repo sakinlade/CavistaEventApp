@@ -71,7 +71,8 @@ namespace CavistaEventCelebration.Api
 
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
             .AddRoles<IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<AppDbContext>();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
             //Add JWT authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
