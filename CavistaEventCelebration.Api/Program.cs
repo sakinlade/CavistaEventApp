@@ -4,14 +4,15 @@ using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Models.EmailService;
 using CavistaEventCelebration.Api.Repositories.Implementation;
 using CavistaEventCelebration.Api.Repositories.Interface;
+using CavistaEventCelebration.Api.Services.implementation;
 using CavistaEventCelebration.Api.Services.Implementation;
 using CavistaEventCelebration.Api.Services.Interface;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Hangfire;
-using Hangfire.PostgreSql;
-using CavistaEventCelebration.Api.Services.implementation;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,6 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEventRepo, EventRepo>();
-builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IEventCelebrationService, EventCelebrationService>();
@@ -56,6 +56,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration)
+);
 
 // Hangfire
 builder.Services.AddHangfire(config =>
@@ -91,6 +94,7 @@ if (app.Environment.IsProduction())
     app.UseHttpsRedirection();
 }
 
+app.UseSerilogRequestLogging();
 app.UseRouting();
 
 app.UseAuthentication();

@@ -1,0 +1,138 @@
+2025-09-21 00:08:58.144 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:08:58.335 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:08:59.962 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:09:00.109 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:09:00.112 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:09:00.114 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:09:00.117 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:09:00.119 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:09:00.123 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:09:00.404 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 successfully announced in 228.8324 ms
+2025-09-21 00:09:00.414 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:09:00.569 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 all the dispatchers started
+2025-09-21 00:10:06.425 +01:00 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2025-09-21 00:10:06.478 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 caught stopping signal...
+2025-09-21 00:10:06.484 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 caught stopped signal...
+2025-09-21 00:10:06.488 +01:00 [WRN] Server axnigcelap1005:13928:3d1adc04 caught shutdown signal...
+2025-09-21 00:10:06.502 +01:00 [WRN] Server axnigcelap1005:13928:3d1adc04 stopped non-gracefully due to ServerJobCancellationWatcher. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-09-21 00:10:06.576 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 successfully reported itself as stopped in 62.5314 ms
+2025-09-21 00:10:06.578 +01:00 [INF] Server axnigcelap1005:13928:3d1adc04 has been stopped in total 94.5868 ms
+2025-09-21 00:10:36.973 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:10:37.112 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:10:38.687 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:10:38.941 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:10:38.944 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:10:38.947 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:10:38.949 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:10:38.952 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:10:38.954 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:10:39.181 +01:00 [INF] Server axnigcelap1005:32232:f06a685b successfully announced in 181.32 ms
+2025-09-21 00:10:39.192 +01:00 [INF] Server axnigcelap1005:32232:f06a685b is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:10:39.752 +01:00 [INF] Server axnigcelap1005:32232:f06a685b all the dispatchers started
+2025-09-21 00:11:25.271 +01:00 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2025-09-21 00:11:25.324 +01:00 [INF] Server axnigcelap1005:32232:f06a685b caught stopping signal...
+2025-09-21 00:11:25.328 +01:00 [INF] Server axnigcelap1005:32232:f06a685b caught stopped signal...
+2025-09-21 00:11:25.334 +01:00 [WRN] Server axnigcelap1005:32232:f06a685b caught shutdown signal...
+2025-09-21 00:11:25.350 +01:00 [WRN] Server axnigcelap1005:32232:f06a685b stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-09-21 00:11:25.424 +01:00 [INF] Server axnigcelap1005:32232:f06a685b successfully reported itself as stopped in 62.4025 ms
+2025-09-21 00:11:25.426 +01:00 [INF] Server axnigcelap1005:32232:f06a685b has been stopped in total 98.2087 ms
+2025-09-21 00:12:21.060 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:12:21.162 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:12:22.487 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:12:22.511 +01:00 [INF] Now listening on: http://[::]:5000
+2025-09-21 00:12:22.628 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:12:22.631 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:12:22.632 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:12:22.633 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:12:22.634 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:12:22.635 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:12:22.666 +01:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-09-21 00:12:22.676 +01:00 [INF] Hosting environment: Development
+2025-09-21 00:12:22.679 +01:00 [INF] Content root path: C:\Users\eobiasogu\source\repos\CavistaEventCelebration\CavistaEventCelebration.Api
+2025-09-21 00:12:22.881 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa successfully announced in 201.9678 ms
+2025-09-21 00:12:22.896 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:12:22.916 +01:00 [INF] 1 servers were removed due to timeout
+2025-09-21 00:12:23.482 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa all the dispatchers started
+2025-09-21 00:12:46.766 +01:00 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2025-09-21 00:12:46.818 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa caught stopping signal...
+2025-09-21 00:12:46.823 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa caught stopped signal...
+2025-09-21 00:12:46.829 +01:00 [WRN] Server axnigcelap1005:16232:9b07adaa caught shutdown signal...
+2025-09-21 00:12:46.841 +01:00 [WRN] Server axnigcelap1005:16232:9b07adaa stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-09-21 00:12:46.917 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa successfully reported itself as stopped in 63.1222 ms
+2025-09-21 00:12:46.918 +01:00 [INF] Server axnigcelap1005:16232:9b07adaa has been stopped in total 95.07 ms
+2025-09-21 00:13:16.865 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:13:17.006 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:13:18.267 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:13:18.535 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:13:18.537 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:13:18.539 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:13:18.541 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:13:18.543 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:13:18.545 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:13:18.740 +01:00 [INF] Server axnigcelap1005:24796:a6aa8e7a successfully announced in 155.5568 ms
+2025-09-21 00:13:18.751 +01:00 [INF] Server axnigcelap1005:24796:a6aa8e7a is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:13:18.904 +01:00 [INF] Server axnigcelap1005:24796:a6aa8e7a all the dispatchers started
+2025-09-21 00:13:42.916 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:13:43.040 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:13:44.408 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:13:44.438 +01:00 [INF] Now listening on: http://[::]:5000
+2025-09-21 00:13:44.547 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:13:44.548 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:13:44.549 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:13:44.550 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:13:44.551 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:13:44.552 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:13:44.597 +01:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-09-21 00:13:44.599 +01:00 [INF] Hosting environment: Development
+2025-09-21 00:13:44.602 +01:00 [INF] Content root path: C:\Users\eobiasogu\source\repos\CavistaEventCelebration\CavistaEventCelebration.Api
+2025-09-21 00:13:44.779 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec successfully announced in 179.9019 ms
+2025-09-21 00:13:44.792 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:13:45.107 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec all the dispatchers started
+2025-09-21 00:14:38.345 +01:00 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2025-09-21 00:14:38.393 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec caught stopping signal...
+2025-09-21 00:14:38.402 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec caught stopped signal...
+2025-09-21 00:14:38.410 +01:00 [WRN] Server axnigcelap1005:14948:5a4ec3ec caught shutdown signal...
+2025-09-21 00:14:38.440 +01:00 [WRN] Server axnigcelap1005:14948:5a4ec3ec stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-09-21 00:14:38.521 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec successfully reported itself as stopped in 73.9475 ms
+2025-09-21 00:14:38.523 +01:00 [INF] Server axnigcelap1005:14948:5a4ec3ec has been stopped in total 123.2877 ms
+2025-09-21 00:19:21.715 +01:00 [INF] Start installing Hangfire SQL objects...
+2025-09-21 00:19:21.821 +01:00 [INF] Hangfire SQL objects installed.
+2025-09-21 00:19:23.073 +01:00 [WRN] Overriding address(es) 'http://localhost:5122'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-09-21 00:19:23.105 +01:00 [INF] Now listening on: http://[::]:5000
+2025-09-21 00:19:23.239 +01:00 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: cavistaeventcelebration, Schema: hangfire'
+2025-09-21 00:19:23.240 +01:00 [INF] Using the following options for PostgreSQL job storage:
+2025-09-21 00:19:23.241 +01:00 [INF]     Queue poll interval: 00:00:15.
+2025-09-21 00:19:23.242 +01:00 [INF]     Invisibility timeout: 00:30:00.
+2025-09-21 00:19:23.243 +01:00 [INF]     Use sliding invisibility timeout: False.
+2025-09-21 00:19:23.244 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-21 00:19:23.285 +01:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-09-21 00:19:23.299 +01:00 [INF] Hosting environment: Development
+2025-09-21 00:19:23.301 +01:00 [INF] Content root path: C:\Users\eobiasogu\source\repos\CavistaEventCelebration\CavistaEventCelebration.Api
+2025-09-21 00:19:23.498 +01:00 [INF] Server axnigcelap1005:30268:246f2db9 successfully announced in 195.3644 ms
+2025-09-21 00:19:23.509 +01:00 [INF] Server axnigcelap1005:30268:246f2db9 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-21 00:19:23.532 +01:00 [INF] 1 servers were removed due to timeout
+2025-09-21 00:19:23.820 +01:00 [INF] Server axnigcelap1005:30268:246f2db9 all the dispatchers started
