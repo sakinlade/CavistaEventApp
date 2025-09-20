@@ -1,6 +1,7 @@
 ﻿using CavistaEventCelebration.Api.Models.EmailService;
 using CavistaEventCelebration.Api.Services.Interface;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -8,8 +9,6 @@ namespace CavistaEventCelebration.Api.Services.implementation
 {
     public class MailService : IMailService
     {
-        //MailSettings Mail_Settings = null;
-
         private readonly MailSettings _mailSettings;
         public MailService(IOptions<MailSettings> options)
         {
@@ -45,5 +44,35 @@ namespace CavistaEventCelebration.Api.Services.implementation
                 return false;
             }
         }
+
+        public async Task SendEmailAsync(MailData mailData)
+        {
+            try
+            {
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(_mailSettings.Host, _mailSettings.Port, _mailSettings.UseSSL);
+                    client.Authenticate(_mailSettings.EmailId, _mailSettings.Password);
+
+                    var email = new MimeMessage();
+                    email.From.Add(new MailboxAddress(_mailSettings.Name, _mailSettings.EmailId));
+                    email.To.Add(new MailboxAddress(mailData.EmailToName, mailData.EmailToId));
+                    email.Subject = mailData.EmailSubject;
+                    BodyBuilder emailBodyBuilder = new BodyBuilder();
+                    emailBodyBuilder.TextBody = mailData.EmailBody;
+                    email.Body = emailBodyBuilder.ToMessageBody();
+                    await client.SendAsync(email);
+                    await client.DisconnectAsync(true);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+           
+        }
+
+
     }
 }

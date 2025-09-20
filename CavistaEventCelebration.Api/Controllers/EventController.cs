@@ -34,9 +34,16 @@ public class EventController : ControllerBase
 
     [Authorize(Roles = "SuperAdmin")]
     [HttpPost("send-Email")]
-    public bool SendMail(MailData Mail_Data)
+    public void SendMail(MailData mailData)
     {
-        return _mailService.SendMail(Mail_Data);
+         mailData = new MailData()
+        {
+            EmailToId = "baniaz4mulki@yahoo.com",
+            EmailSubject = $"Happy Friday ! 🎊",
+            EmailBody = "Abdul friday happy",
+            EmailToName = $"Ihsan"
+        };
+        _mailService.SendEmailAsync(mailData);
     }
 }
 

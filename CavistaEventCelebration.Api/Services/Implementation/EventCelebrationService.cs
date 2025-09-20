@@ -50,7 +50,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                     EmailToName = $"{ev.EmployeeFirstName} {ev.EmployeeLastName}"
                 };
 
-                _mailService.SendMail(mailData);
+               await _mailService.SendEmailAsync(mailData);
             }
         }
 
