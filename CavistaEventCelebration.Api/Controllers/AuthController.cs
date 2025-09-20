@@ -1,4 +1,5 @@
-﻿using CavistaEventCelebration.Api.Models.Authentication;
+﻿using CavistaEventCelebration.Api.Models;
+using CavistaEventCelebration.Api.Models.Authentication;
 using CavistaEventCelebration.Api.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -116,5 +117,21 @@ namespace CavistaEventCelebration.Api.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<PaginatedList<UserResponse>>> GetUsers(int? index, int? pageSize, string? searchString)
+        {
+            var result = await _authenticationService.GetUsersAsync(index, pageSize, searchString);
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+
+
     }
 }

@@ -225,6 +225,38 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             return await Task.FromResult(roles);
         }
 
+        public async Task<PaginatedList<UserResponse>> GetUsersAsync(int? index, int? pageSize, string? searchString)
+        {
+            var userResp = new List<UserResponse>();
+            var result = new PaginatedList<UserResponse>(userResp, 0, 0 ,0);
+
+            var users = _userManager.Users.Join(_dbContext.Employees, u => u.Email, e => e.EmailAddress, (u, e) => new UserResponse
+            {
+                Id = u.Id.ToString(),
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                UserName = u.UserName,
+                EmployeeId = e.Id,
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber
+            });
+
+            if (users != null)
+            {
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    users = users.Where(s => s.LastName.ToLower().Contains(searchString.ToLower())
+                                           || s.FirstName.ToLower().Contains(searchString.ToLower()));
+                }
+
+                result =  await PaginatedList<UserResponse>.CreateAsync(users, index ?? 1, pageSize ?? 10);
+
+                return result;
+            }
+
+            return result;
+        }
+
         private JwtSecurityToken GenerateAccessToken(string userName, string email, IList<string> roles, DateTime? expiry)
         {         
             // Create user claims
