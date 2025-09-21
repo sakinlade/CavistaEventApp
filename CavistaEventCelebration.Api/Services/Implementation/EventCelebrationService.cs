@@ -36,9 +36,9 @@ namespace CavistaEventCelebration.Api.Services.Implementation
 
                 var template = LoadTemplate();
                 var finalBody = ReplaceTokens(template,
-                                              ev.EmployeeFirstName,
-                                              ev.EmployeeLastName,
-                                              ev.EventTitle,
+                                          ev.EmployeeFirstName,
+                                           ev.EmployeeLastName,
+                                            ev.EventTitle,
                                               generalMessage,
                                               customMessage);
 
@@ -50,7 +50,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                     EmailToName = $"{ev.EmployeeFirstName} {ev.EmployeeLastName}"
                 };
 
-               await _mailService.SendEmailAsync(mailData);
+                await _mailService.SendEmailAsync(mailData);
             }
         }
 

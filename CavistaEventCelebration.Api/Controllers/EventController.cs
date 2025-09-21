@@ -18,7 +18,7 @@ public class EventController : ControllerBase
     }
 
 
-    [HttpGet("GetEvent")]
+    [HttpGet]
     public IEnumerable<Event> Get()
     {
         //return Enumerable.Range(1, 5).Select(index =>
@@ -31,19 +31,6 @@ public class EventController : ControllerBase
 
         return null;
     }
-
-    [Authorize(Roles = "SuperAdmin")]
-    [HttpPost("send-Email")]
-    public void SendMail(MailData mailData)
-    {
-         mailData = new MailData()
-        {
-            EmailToId = "baniaz4mulki@yahoo.com",
-            EmailSubject = $"Happy Friday ! 🎊",
-            EmailBody = "Abdul friday happy",
-            EmailToName = $"Ihsan"
-        };
-        _mailService.SendEmailAsync(mailData);
-    }
+     
 }
 

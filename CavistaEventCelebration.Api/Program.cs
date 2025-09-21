@@ -22,60 +22,8 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(int.Parse(port));
 });
 
-// Dependency Injection
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IEventRepo, EventRepo>();
-builder.Services.AddTransient<IMailService, MailService>();
-builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-builder.Services.AddTransient<IEventCelebrationService, EventCelebrationService>();
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
-
-// Controllers & Swagger
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Cavista Event Celebration API",
-        Version = "v1"
-    });
-});
-
-// DB
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
-Console.WriteLine($"DB Connection: {connectionString}");
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
-builder.Host.UseSerilog((context, config) =>
-    config.ReadFrom.Configuration(context.Configuration)
-);
-
-// Hangfire
-builder.Services.AddHangfire(config =>
-    config.UsePostgreSqlStorage(connectionString));
-builder.Services.AddHangfireServer();
-
-var corsPolicyName = "AllowAll";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(corsPolicyName, policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-
+var policyName = "CorsPolicy";
+ServiceRegistraion.AddServices(builder, policyName);
 var app = builder.Build();
 
 // Migrate DB
@@ -107,9 +55,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHangfireDashboard("/eventjobs");
-
-
-app.UseCors(corsPolicyName);
+app.UseCors(policyName);
 app.MapControllers();
 
 app.Run();

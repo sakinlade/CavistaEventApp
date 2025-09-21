@@ -6,6 +6,8 @@ using CavistaEventCelebration.Api.Repositories.Interface;
 using CavistaEventCelebration.Api.Services.implementation;
 using CavistaEventCelebration.Api.Services.Implementation;
 using CavistaEventCelebration.Api.Services.Interface;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,14 +20,14 @@ namespace CavistaEventCelebration.Api
 {
     public static class ServiceRegistraion
     {
-        public const string policyName = "CorsPolicy";
-        public static void AddServices(this WebApplicationBuilder builder)
+        public static void AddServices(this WebApplicationBuilder builder, string policyName)
         {
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+            builder.Services.AddScoped<IEventRepo, EventRepo>();
             builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-
+            builder.Services.AddTransient<IEventCelebrationService, EventCelebrationService>();
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -66,7 +68,6 @@ namespace CavistaEventCelebration.Api
             var configuration = builder.Configuration;
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
                                   ?? configuration.GetConnectionString("DefaultConnection");
-
             builder.Services.AddDbContext<AppDbContext>(options =>
                  options.UseNpgsql(connectionString));
 
@@ -74,6 +75,10 @@ namespace CavistaEventCelebration.Api
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+            builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(connectionString));
+            builder.Services.AddHangfireServer();
 
             builder.Host.UseSerilog((context, config) =>
             config.ReadFrom.Configuration(context.Configuration));

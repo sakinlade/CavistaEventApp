@@ -5,7 +5,6 @@ namespace CavistaEventCelebration.Api.Services.Interface
 {
     public interface IMailService
     {
-        bool SendMail(MailData Mail_Data);
         Task SendEmailAsync(MailData mailData);
     }
 }
