@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using Serilog;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
@@ -63,8 +64,9 @@ namespace CavistaEventCelebration.Api.Services.Implementation
 
                 return new LoginResponse { Success = false, Message = "Wrong email or password" };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex.Message);
                 return new LoginResponse { Success = false, Message = "Internal server error" };
             }                      
         }
@@ -121,6 +123,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message);
                 return new SignInResponse { Success = false, Message = $"internal Server Error {ex.Message}" };
             }         
         }
@@ -165,6 +168,7 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message);
                 return new LoginResponse { Success = false, Message = "Internal server error" };
             }
         }
