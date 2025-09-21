@@ -174,14 +174,19 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user != null) 
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var confirmedOldPassword = await _signInManager.PasswordSignInAsync(user, changePassword.OldPassword, false, lockoutOnFailure: false);
 
-                var result = await _userManager.ResetPasswordAsync(user, token, changePassword.NewPassword);
+                if (confirmedOldPassword != null && confirmedOldPassword.Succeeded) 
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                if (result.Succeeded)
-                    return new ChangePasswordResponse { Success = true, Message = "Password change was successful" };
+                    var result = await _userManager.ResetPasswordAsync(user, token, changePassword.NewPassword);
 
-                return new ChangePasswordResponse { Success = false, Message = "Password change was Unsuccessful", Errors = result.Errors.Select(x => x.Description).ToList() };
+                    if (result.Succeeded)
+                        return new ChangePasswordResponse { Success = true, Message = "Password change was successful" };
+                }
+
+                return new ChangePasswordResponse { Success = false, Message = "Wrong old password" };
             }
 
             return new ChangePasswordResponse { Success = false, Message = "User not found" }; ;            
@@ -230,16 +235,19 @@ namespace CavistaEventCelebration.Api.Services.Implementation
             var userResp = new List<UserResponse>();
             var result = new PaginatedList<UserResponse>(userResp, 0, 1 ,10);
 
-            var users = _userManager.Users.Join(_dbContext.Employees, u => u.Email, e => e.EmailAddress, (u, e) => new UserResponse
-            {
-                Id = u.Id.ToString(),
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                UserName = u.UserName,
-                EmployeeId = e.Id,
-                Email = u.Email,
-                PhoneNumber = u.PhoneNumber
-            });
+            var users = _userManager.Users.
+                Join(_dbContext.Employees, u => u.Email, e => e.EmailAddress, (user, employee) => new {user, employee})
+                .Where(userEmployee => !userEmployee.employee.IsDeprecated)
+                .Select(userEmployee => new UserResponse
+                {
+                    Id = userEmployee.user.Id.ToString(),
+                    FirstName = userEmployee.employee.FirstName,
+                    LastName = userEmployee.employee.LastName,
+                    UserName = userEmployee.user.UserName,
+                    EmployeeId = userEmployee.employee.Id,
+                    Email = userEmployee.user.Email,
+                    PhoneNumber = userEmployee.user.PhoneNumber
+                });
 
             if (users != null)
             {
