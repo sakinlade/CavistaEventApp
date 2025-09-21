@@ -136,3 +136,4 @@
 2025-09-21 00:19:23.509 +01:00 [INF] Server axnigcelap1005:30268:246f2db9 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
 2025-09-21 00:19:23.532 +01:00 [INF] 1 servers were removed due to timeout
 2025-09-21 00:19:23.820 +01:00 [INF] Server axnigcelap1005:30268:246f2db9 all the dispatchers started
+2025-09-21 00:29:57.082 +01:00 [ERR] An error occurred using the connection to database 'cavistaeventcelebration' on server 'tcp://localhost:5432'.
