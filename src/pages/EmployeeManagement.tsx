@@ -29,7 +29,7 @@ const EmployeeManagement = () => {
 
     const fetchingEmployees = async () => {
         try {
-            const response = await request({token}).get('/api/Employeess');
+            const response = await request({token}).get('/api/Employees');
             if (response && response.status === 200) {
                 setEmployees(response.data);
             }
@@ -71,9 +71,9 @@ const EmployeeManagement = () => {
                 <Table variant='simple' border={"1px solid #edf2f7"}>
                     <Thead>
                         <Tr>
-                            <Th>ID</Th>
                             <Th>Name</Th>
                             <Th>Email</Th>
+                            <Th>ID</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
@@ -87,9 +87,20 @@ const EmployeeManagement = () => {
                         ) : (
                             employees.map((employee) => (
                                 <Tr key={employee.id}>
-                                    <Td>{employee.id}</Td>
-                                    <Td>{employee.name}</Td>
-                                    <Td>{employee.email}</Td>
+                                    <Td>
+                                        <div className="flex items-center">
+                                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium uppercase">
+                                                {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
+                                            </div>
+                                            <div className="ml-4">
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {employee.firstName} {employee.lastName}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Td>
+                                    <Td className="text-sm font-medium text-gray-700">{employee.emailAddress}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">{employee.id}</Td>
                                 </Tr>
                             ))
                         )

@@ -147,7 +147,7 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
           </Formik>
           </ModalBody>
         </ModalContent>
-      </Modal>
+    </Modal>
   )
 }
 

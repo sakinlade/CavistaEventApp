@@ -12,6 +12,19 @@ export type { RegisterFormValues };
 
 export interface Employee {
   id: number;
-  name: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
 }
+
+export interface Event {
+  id: number;
+  name: string;
+  isDepricated: boolean;
+}
+export interface EventResponse {
+  data: Event[];
+  errorMessage: string;
+  isSuccessful: boolean;
+  messageMessage: string;
+} 

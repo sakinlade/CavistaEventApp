@@ -36,3 +36,9 @@ export const EmployeeSchema = Yup.object().shape({
     .email('Invalid email address')
     .required('Email is required'),
 });
+
+export const EventSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, 'Event name must be at least 2 characters')
+    .required('Event name is required'),
+});

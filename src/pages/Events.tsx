@@ -1,18 +1,41 @@
-import { Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { 
+    Box, 
+    Button, 
+    HStack, 
+    Menu, 
+    MenuButton, 
+    MenuItem, 
+    MenuList, 
+    Table, 
+    TableContainer, 
+    Tbody, 
+    Td, 
+    Text, 
+    Th, 
+    Thead, 
+    Tr, 
+    useDisclosure} from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar"
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import request from "../utils/httpsRequest";
 import { useUserAuthContext } from "../context/user/user.hook";
+import type { Event, EventResponse } from "../utils/types";
+import AddEvent from "../components/AddEvent";
+import DeleteModal from "../components/DeleteModal";
 
 const Events = () => {
 
     const { token } = useUserAuthContext();
-    const [events, setEvents] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const { isOpen, onClose, onOpen } = useDisclosure();
+    const [events, setEvents] = useState<EventResponse | null>(null);
+    const [deletingEventId, setDeletingEventId] = useState<number>();
+    const { isOpen: isDeleteModalOpen, onClose: onDeleteModalClose, onOpen: onDeleteModalOpen } = useDisclosure();
 
     const fetchingEvents = async () => {
         try {
-            const response = await request({token}).get('/Event');
+            const response = await request({token}).get('/api/Events');
             if (response && response.status === 200) {
                 setEvents(response.data);
             }
@@ -28,13 +51,37 @@ const Events = () => {
         }
     }, [token]);
 
+    const handleDeleteEvent = async () => {
+        if(!deletingEventId) return;
+        setIsLoading(true);
+        try {
+            const response = await request({ token }).delete(`/api/Events/${deletingEventId}`);
+            if (response && response.status === 200) {
+                toast.success('Event deleted successfully!');
+                fetchingEvents();
+                onDeleteModalClose();
+            }
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+            toast.error('Failed to delete event. Please try again.');
+        } finally{
+            setIsLoading(false);
+            setDeletingEventId(undefined);
+        }
+    }
+
   return (
     <div className="flex min-h-screen">
         <Sidebar />
         <main className="flex-1 p-6">
             <Box mb={6}>
-                <Text className="text-2xl font-bold mb-1">Events</Text>
-                <Text className="text-gray-700 mb-6">Manage your events effectively.</Text>
+                <HStack justify={"space-between"}>
+                    <Box>
+                        <Text className="text-2xl font-bold mb-1">Events</Text>
+                        <Text className="text-gray-700 mb-6">Manage your events effectively.</Text>
+                    </Box>
+                    <Button onClick={onOpen} colorScheme="red" size="sm">Add Event</Button>
+                </HStack>
             </Box>
             <TableContainer>
                 <Table variant='simple' border={"1px solid #edf2f7"}>
@@ -42,23 +89,38 @@ const Events = () => {
                         <Tr>
                             <Th>ID</Th>
                             <Th>Name</Th>
-                            <Th>Email</Th>
+                            <Th>Action</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
                         {
-                        events.length === 0 ? (
+                        events?.data.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
                                     No events found.
                                 </td>
                             </tr>
                         ) : (
-                            events?.map((event: any) => (
+                            events?.data?.map((event: Event) => (
                                 <Tr key={event.id}>
                                     <Td>{event.id}</Td>
                                     <Td>{event.name}</Td>
-                                    <Td>{event.email}</Td>
+                                    <Td>
+                                        <Menu>
+                                            <MenuButton as={Button} size="sm" variant="ghost">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                </svg>
+                                            </MenuButton>
+                                            <MenuList>
+                                                <MenuItem>Edit</MenuItem>
+                                                <MenuItem color="red.500" onClick={() => {
+                                                    setDeletingEventId(event.id);
+                                                    onDeleteModalOpen();
+                                                }}>Delete</MenuItem>
+                                            </MenuList>
+                                        </Menu>
+                                    </Td>
                                 </Tr>
                             ))
                         )
@@ -67,6 +129,15 @@ const Events = () => {
                 </Table>
             </TableContainer>
         </main>
+
+        <AddEvent isOpen={isOpen} onClose={onClose} fetchingEvents={fetchingEvents} />
+        <DeleteModal 
+        title="Delete Event"
+        isLoading={isLoading}
+        isOpen={isDeleteModalOpen} 
+        onClose={onDeleteModalClose} 
+        confirmAction={handleDeleteEvent} 
+        />
     </div>
   )
 }
