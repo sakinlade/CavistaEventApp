@@ -1,6 +1,0 @@
-@CavistaEventCelebration.Api_HostAddress = http://localhost:5122
-
-GET {{CavistaEventCelebration.Api_HostAddress}}/swagger/
-Accept: application/json
-
-###
