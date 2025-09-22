@@ -2,8 +2,6 @@
 using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Repositories.Interface;
 using CavistaEventCelebration.Api.Services.Interface;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
-
 namespace CavistaEventCelebration.Api.Services.Implementation
 {
     public class EventService : IEventService
