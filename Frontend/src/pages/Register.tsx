@@ -29,7 +29,6 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const Register = () => {
-  
     const navigate = useNavigate();
     const initialValues: RegisterFormValues = {
         firstName: '',
