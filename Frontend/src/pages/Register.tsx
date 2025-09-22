@@ -31,13 +31,13 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 const Register = () => {
     const navigate = useNavigate();
     const initialValues: RegisterFormValues = {
-        firstName: '',
-        lastName: '',
-        userName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        agreeToTerms: false,
+      firstName: '',
+      lastName: '',
+      userName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      agreeToTerms: false,
     };
 
     const handleSubmit = async (values: RegisterFormValues) => {
