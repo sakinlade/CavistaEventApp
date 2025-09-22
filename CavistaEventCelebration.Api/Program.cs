@@ -14,7 +14,7 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var policyName = "CorsPolicy";
-ServiceRegistraion.AddServices(builder, policyName);
+ServiceRegistration.AddServices(builder, policyName);
 var app = builder.Build();
 
 // Migrate DB

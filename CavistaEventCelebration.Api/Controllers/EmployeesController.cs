@@ -19,7 +19,7 @@ namespace CavistaEventCelebration.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return (IActionResult)await _es.Get();
+            return Ok(await _es.Get());
         }
 
 
