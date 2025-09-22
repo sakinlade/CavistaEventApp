@@ -1,6 +1,6 @@
 ﻿namespace CavistaEventCelebration.Api.Models
 {
-    public class EmployeeEvents
+    public class EmployeeEvent
     {
         public Guid Id { get; set; }
         public Guid EmployeeId { get; set; }

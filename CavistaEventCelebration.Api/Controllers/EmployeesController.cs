@@ -1,15 +1,16 @@
 ﻿using CavistaEventCelebration.Api.Dto;
 using CavistaEventCelebration.Api.Services.Interface;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClientEventsNotifier.Controllers
+namespace CavistaEventCelebration.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeessController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _es;
-        public EmployeessController(IEmployeeService es)
+        public EmployeesController(IEmployeeService es)
 
         {
             _es = es;
@@ -30,12 +31,19 @@ namespace ClientEventsNotifier.Controllers
         }
 
         [HttpPost("upload-excel")]
-        public async Task<IActionResult> UploadExcel(IFormFile file)
+        public IActionResult ImportEmployees(IFormFile file, [FromServices] IBackgroundJobClient backgroundJobs)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
-            await _es.UploadEmployee(file);
-            return Created();
+            var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+            backgroundJobs.Enqueue<IEmployeeService>(service => service.UploadEmployee(filePath));
+
+            return Ok(new { Message = "Employee import job has been queued." });
         }
+
     }
 }

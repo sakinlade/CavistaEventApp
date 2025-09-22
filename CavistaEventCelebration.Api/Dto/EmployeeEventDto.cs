@@ -2,8 +2,9 @@
 {
     public class EmployeeEventDto
     {
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid Id { get; set; }
+        public Guid EmployeeId { get; set; }
+        public int EventId { get; set; }
+        public DateOnly EventDate { get; set; }
     }
 }

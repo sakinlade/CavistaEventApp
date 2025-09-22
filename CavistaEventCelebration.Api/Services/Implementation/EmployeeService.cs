@@ -1,10 +1,8 @@
-﻿using CavistaEventCelebration.Api.Data;
-using CavistaEventCelebration.Api.Dto;
+﻿using CavistaEventCelebration.Api.Dto;
 using CavistaEventCelebration.Api.Models;
 using CavistaEventCelebration.Api.Repositories.Interface;
 using CavistaEventCelebration.Api.Services.Interface;
-using OfficeOpenXml.Drawing;
-using OfficeOpenXml;
+using ClosedXML.Excel;
 
 namespace CavistaEventCelebration.Api.Services.Implementation
 {
@@ -27,42 +25,45 @@ namespace CavistaEventCelebration.Api.Services.Implementation
                 FirstName = employee.FirstName,
                 LastName = employee.LastName
             };
-
             return _repo.Add(_employee);
         }
 
-        public async Task<bool> UploadEmployee(IFormFile file)
+        public async Task UploadEmployee(string filePath)
         {
-            var employees = new List<Employee>();
-            using var stream = new System.IO.MemoryStream();
-            await file.CopyToAsync(stream);
-            using var package = new ExcelPackage(stream);
-            var sheet = package.Workbook.Worksheets.FirstOrDefault();
-            if (sheet == null) return false;
-            var row = 2; var created = 0; 
-            while (true)
+            try
             {
-                var first = sheet.Cells[row, 1].Text;
-                if (string.IsNullOrWhiteSpace(first))
-                    break; var last = sheet.Cells[row, 2].Text;
-                var email = sheet.Cells[row, 3].Text;
-                var phone = sheet.Cells[row, 4].Text;
-                var btxt = sheet.Cells[row, 5].Text;
-                var atxt = sheet.Cells[row, 6].Text;
-                var cname = sheet.Cells[row, 7].Text;
-                var cdate = sheet.Cells[row, 8].Text;
-                var employee = new Employee()
+                using var workbook = new XLWorkbook(filePath);
+                var worksheet = workbook.Worksheet(1);
+                var rows = worksheet.RowsUsed();
+                var employees = new List<Employee>();
+                foreach (var row in rows.Skip(1)) 
                 {
-                    Id = new Guid(),
-                    FirstName = first,
-                    LastName = last,
-                    EmailAddress = email,
-                };
-                employees.Add(employee); row++; created++;
+                    var firstName = row.Cell(1).GetString();
+                    var lastName = row.Cell(2).GetString();
+                    var email = row.Cell(3).GetString();
+                    if (string.IsNullOrWhiteSpace(email)) continue;
+                    employees.Add(new Employee
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstName = firstName,
+                        LastName = lastName,
+                        EmailAddress = email,
+                        IsDeprecated = false
+                    });
+                }
+
+                await _repo.UploadEmployee(employees);
+                Console.WriteLine($" Imported {employees.Count} employees successfully from {filePath}");
             }
-            
-            await _repo.UploadEmployee(employees);
-            return true;
+            catch (Exception ex)
+            {
+                Console.WriteLine($" Employee import failed: {ex.Message}");
+            }
+            finally
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
         }
 
         public async Task<List<Employee>> Get()

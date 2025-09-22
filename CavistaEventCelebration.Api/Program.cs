@@ -1,17 +1,8 @@
 using CavistaEventCelebration.Api;
 using CavistaEventCelebration.Api.Data;
-using CavistaEventCelebration.Api.Models;
-using CavistaEventCelebration.Api.Models.EmailService;
-using CavistaEventCelebration.Api.Repositories.Implementation;
-using CavistaEventCelebration.Api.Repositories.Interface;
-using CavistaEventCelebration.Api.Services.implementation;
-using CavistaEventCelebration.Api.Services.Implementation;
 using CavistaEventCelebration.Api.Services.Interface;
 using Hangfire;
-using Hangfire.PostgreSql;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

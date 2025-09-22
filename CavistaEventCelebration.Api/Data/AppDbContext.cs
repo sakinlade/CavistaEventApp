@@ -12,7 +12,7 @@ namespace CavistaEventCelebration.Api.Data
 
         public DbSet<Event> Events { get; set; }
         public DbSet<Employee>  Employees { get; set; }
-        public DbSet<EmployeeEvents> EmployeeEvents { get; set; }
+        public DbSet<EmployeeEvent> EmployeeEvents { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
