@@ -68,7 +68,7 @@ const BulkUpload = ({ isOpen, onClose, fetchingEmployees }: BulkUploadProps) => 
     try {
       setUploading(true);
       setUploadStatus('idle');
-      const response = await request({ token, contentType: 'multipart/form-data' }).post('/api/Employees/BulkUpload', formData);
+      const response = await request({ token, contentType: 'multipart/form-data' }).post('/api/Employees/upload-excel', formData);
       if (response && response.status === 200) {
         setUploadStatus('success');
         fetchingEmployees();
