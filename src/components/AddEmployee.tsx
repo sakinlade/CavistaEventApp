@@ -24,14 +24,14 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
 
     const { token } = useUserAuthContext();
     const initialValues = {
-        firstName: '',
-        lastName: '',
-        email: '',
+      firstName: '',
+      lastName: '',
+      email: '',
     }
 
     const handleSubmit = async (values: typeof initialValues) => {
         try {
-            const response = await request({ token }).post('/api/Employeess', values);
+            const response = await request({ token }).post('/api/Employees', values);
             if (response && response.status === 201) {
                 toast.success('Employee added successfully!');
                 fetchingEmployees();
@@ -139,7 +139,7 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
                     color={"white"}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Signing in...' : 'Sign in'}
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
                   </Button>
                 </div>
               </Form>

@@ -61,7 +61,7 @@ const EmployeeManagement = () => {
             </Box>
             <div className="flex items-center justify-between mb-5">
                 <div className="">
-                    <Input type="text" placeholder="Search employees..." />
+                    <Input type="text" placeholder="Search employees..." w={"400px"}/>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button 

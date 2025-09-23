@@ -83,7 +83,7 @@ const Sidebar = () => {
             to={item.path}
             className={`flex items-center px-4 py-3 transition-all rounded-lg ${
               currentPath === item.path 
-                ? 'bg-red-800 text-white shadow-md' 
+                ? 'bg-white! text-red-800! shadow-md' 
                 : 'text-red-100 hover:bg-red-600'
             }`}
           >
@@ -92,7 +92,7 @@ const Sidebar = () => {
             </div>
             <span className="font-medium">{item.label}</span>
             {currentPath === item.path && (
-              <div className="ml-auto w-1.5 h-6 bg-red-300 rounded-full"></div>
+              <div className="ml-auto w-1.5 h-6 bg-red-400 rounded-full"></div>
             )}
           </Link>
         ))}
