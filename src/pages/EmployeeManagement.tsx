@@ -48,8 +48,6 @@ const EmployeeManagement = () => {
             fetchingEmployees();
         }
     }, [token]);
-
-    console.log('Employees:', employees);
     
   return (
     <div className="flex min-h-screen">

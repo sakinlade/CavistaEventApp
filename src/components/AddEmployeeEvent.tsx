@@ -65,7 +65,6 @@ const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }
             onSubmit={handleSubmit}
             >
             {({ isSubmitting, errors, touched, handleBlur, handleChange, values }) => {
-                console.log(values);
                 return(
                 <Form className="space-y-6">
                 <div>

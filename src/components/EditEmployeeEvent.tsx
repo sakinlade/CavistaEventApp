@@ -72,7 +72,6 @@ const EditEmployeeEvent = ({isOpen, onClose, events, employees, selectedEvent, f
             onSubmit={handleSubmit}
             >
             {({ isSubmitting, errors, touched, handleBlur, handleChange, values }) => {
-                console.log(values);
                 return(
                 <Form className="space-y-6">
                 <div>

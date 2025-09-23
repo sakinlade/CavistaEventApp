@@ -2,7 +2,6 @@ import { getCookie } from "cookies-next";
 import { type IUserAuthContext } from "./type";
 import { createContext, useEffect, useReducer, type ReactNode } from "react";
 import { UserAuthAction, UserAuthReducer, UserInitialState } from "./user-reducer";
-// import request from "../../utils/httpsRequest";
 
 export const UserAuthContext = createContext<IUserAuthContext>({
     token: "",
