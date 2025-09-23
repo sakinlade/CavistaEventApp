@@ -52,8 +52,10 @@ const Dashboard = () => {
 
     return (
         <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 bg-gray-50 p-6">
+            <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
+                <Sidebar />
+            </div>
+            <main className="flex-1 ml-64 p-6 overflow-y-auto h-screen">
                 <div className="mb-8">
                     <Text className="text-3xl font-bold text-gray-800">Dashboard Overview</Text>
                     <Text className="text-gray-600 mt-1">Welcome to your staff celebration dashboard</Text>

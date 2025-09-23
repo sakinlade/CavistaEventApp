@@ -76,8 +76,10 @@ const Events = () => {
 
   return (
     <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 p-6">
+         <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
+            <Sidebar />
+        </div>
+        <main className="flex-1 ml-64 p-6 overflow-y-auto h-screen">
             <Box mb={6}>
                 <HStack justify={"space-between"}>
                     <Box>

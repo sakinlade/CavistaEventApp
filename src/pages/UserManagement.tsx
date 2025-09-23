@@ -128,8 +128,10 @@ const UserManagement = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            <Sidebar />
-            <main className="flex-1 p-6">
+            <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
+                <Sidebar />
+            </div>
+            <main className="flex-1 ml-64 p-6 overflow-y-auto h-screen">
                 <Box mb={6}>
                     <Text className="text-2xl font-bold mb-1">User Management</Text>
                     <Text className="text-gray-600 mb-6">Manage users and their permissions</Text>
