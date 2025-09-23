@@ -28,3 +28,15 @@ export interface EventResponse {
   isSuccessful: boolean;
   messageMessage: string;
 } 
+
+export interface EmployeeEventsResponse {
+  data: Event[];
+  errorMessage: string;
+  isSuccessful: boolean;
+  messageMessage: string;
+} 
+
+export interface Role {
+  id: number;
+  name: string;
+}

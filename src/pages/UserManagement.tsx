@@ -11,12 +11,18 @@ import {
     Menu,
     MenuButton,
     MenuList,
-    MenuItem
+    MenuItem,
+    useDisclosure
 } from '@chakra-ui/react'
 import { useUserAuthContext } from '../context/user/user.hook';
 import { useEffect, useState } from 'react';
 import request from '../utils/httpsRequest';
 import toast from 'react-hot-toast';
+import { LuUserRoundPen } from "react-icons/lu";
+import { MdOutlineEdit } from "react-icons/md";
+import { GoTrash } from "react-icons/go";
+import type { Role } from '../utils/types';
+import EditRole from '../components/EditRole';
 
 interface User {
     id: string;
@@ -43,6 +49,9 @@ const UserManagement = () => {
     const [pageSize, setPageSize] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [roles, setRoles] = useState<Role[]>([]);
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const { isOpen: isEditRoleOpen, onOpen: onEditRoleOpen, onClose: onEditRoleClose } = useDisclosure();
 
     const fetchUsers = async (page: number = 1, size: number = 10, search: string = '') => {
         setIsLoading(true);
@@ -59,9 +68,23 @@ const UserManagement = () => {
         }
     }
 
+    const fetchingRoles = async () => {
+        try {
+            const response = await request({token}).get('/api/Auth/GetRoles');
+            if (response && response.status === 200) {
+                setRoles(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch roles:', error);
+            toast.error('Failed to fetch roles. Please try again.');
+        }
+    }
+    
+
     useEffect(() => {
         if (token) {
             fetchUsers(currentPage, pageSize, searchTerm);
+            fetchingRoles();
         }
     }, [token, currentPage, pageSize]);
 
@@ -232,9 +255,23 @@ const UserManagement = () => {
                                                         </svg>
                                                     </MenuButton>
                                                     <MenuList>
-                                                        <MenuItem>View Profile</MenuItem>
-                                                        <MenuItem>Edit</MenuItem>
-                                                        <MenuItem color="red.500">Delete</MenuItem>
+                                                        <MenuItem
+                                                        onClick={() => {
+                                                            setSelectedUserId(user.id);
+                                                            onEditRoleOpen();
+                                                        }}
+                                                        gap={2} fontSize={"sm"} color={"gray.600"}>
+                                                            <LuUserRoundPen className='w-5' />
+                                                            Change Role
+                                                        </MenuItem>
+                                                        <MenuItem gap={2} fontSize={"sm"} color={"gray.600"}>
+                                                            <MdOutlineEdit className='w-5' />
+                                                            Edit
+                                                        </MenuItem>
+                                                        <MenuItem gap={2} fontSize={"sm"} color={"red.500"}>
+                                                            <GoTrash className='w-5' />
+                                                            Delete
+                                                        </MenuItem>
                                                     </MenuList>
                                                 </Menu>
                                             </td>
@@ -327,6 +364,13 @@ const UserManagement = () => {
                     )}
                 </div>
             </main>
+            <EditRole 
+            isOpen={isEditRoleOpen} 
+            onClose={onEditRoleClose} 
+            roles={roles} 
+            refetching={fetchUsers} 
+            selectedUserId={selectedUserId}
+            />
         </div>
     )
 }

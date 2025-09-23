@@ -42,3 +42,17 @@ export const EventSchema = Yup.object().shape({
     .min(2, 'Event name must be at least 2 characters')
     .required('Event name is required'),
 });
+
+export const ChangeRoleSchema = Yup.object().shape({
+  role: Yup.string()
+    .min(2, 'Role name must be at least 2 characters')
+    .required('Role name is required'),
+});
+
+export const EmployeeEventSchema = Yup.object().shape({
+  eventId: Yup.string().required('Event ID is required'),
+  employeeId: Yup.string()
+    .required('Employee ID is required'),
+  eventDate: Yup.date()
+    .required('Event date is required'),
+});
