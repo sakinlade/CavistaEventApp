@@ -29,8 +29,19 @@ export interface EventResponse {
   messageMessage: string;
 } 
 
+export interface EmployeeEvent {
+  id: number;
+  employeeId: number;
+  eventId: number;
+  eventDate: string;
+  employeeFirstName: string;
+  employeeLastName: string;
+  employeeEmailAddress: string;
+  eventTitle: string;
+}
+
 export interface EmployeeEventsResponse {
-  data: Event[];
+  data: EmployeeEvent[];
   errorMessage: string;
   isSuccessful: boolean;
   messageMessage: string;

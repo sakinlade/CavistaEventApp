@@ -21,16 +21,23 @@ import {
 import { useUserAuthContext } from '../context/user/user.hook';
 import request from '../utils/httpsRequest';
 import toast from 'react-hot-toast';
-import type { Employee, EmployeeEventsResponse, Event, EventResponse } from '../utils/types';
+import type { Employee, EmployeeEvent, EmployeeEventsResponse, EventResponse } from '../utils/types';
 import AddEmployeeEvent from '../components/AddEmployeeEvent';
+import DeleteModal from '../components/DeleteModal';
+import EditEmployeeEvent from '../components/EditEmployeeEvent';
 
 const EmployeeEvents = () => {
 
     const { token } = useUserAuthContext();
+    const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<EventResponse | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<EmployeeEvent | null>(null);
     const [employeeEvents, setEmployeeEvents] = useState<EmployeeEventsResponse | null>(null);
+    const [deletingEventId, setDeletingEventId] = useState<number>();
+    const { isOpen: isDeleteModalOpen, onClose: onDeleteModalClose, onOpen: onDeleteModalOpen } = useDisclosure();
+    const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
 
     const fetchingEmployeeEvents = async () => {
         try {
@@ -67,7 +74,6 @@ const EmployeeEvents = () => {
         }
     }
 
-
     useEffect(() => {
         if (token) {
             fetchingEmployeeEvents();
@@ -76,7 +82,24 @@ const EmployeeEvents = () => {
         }
     }, [token]);
 
-    console.log('Events:', events); 
+    const handleDeleteEvent = async () => {
+        if(!deletingEventId) return;
+        setIsLoading(true);
+        try {
+            const response = await request({ token }).delete(`/api/EmployeeEvents?id=${deletingEventId}`);
+            if (response && response.status === 200) {
+                toast.success('Employee event deleted successfully!');
+                fetchingEmployeeEvents();
+                onDeleteModalClose();
+            }
+        } catch (error) {
+            console.error('Failed to delete employee event:', error);
+            toast.error('Failed to delete employee event. Please try again.');
+        } finally{
+            setIsLoading(false);
+            setDeletingEventId(undefined);
+        }
+    }
 
   return (
     <div className="flex min-h-screen">
@@ -96,7 +119,10 @@ const EmployeeEvents = () => {
                     <Thead>
                         <Tr>
                             <Th>ID</Th>
-                            <Th>Name</Th>
+                            <Th>Event Name</Th>
+                            <Th>Employee Name</Th>
+                            <Th>Employee Email</Th>
+                            <Th>Event Date</Th>
                             <Th>Action</Th>
                         </Tr>
                     </Thead>
@@ -109,10 +135,13 @@ const EmployeeEvents = () => {
                                 </td>
                             </tr>
                         ) : (
-                            employeeEvents?.data?.map((event: Event) => (
+                            employeeEvents?.data?.map((event: EmployeeEvent) => (
                                 <Tr key={event.id}>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.id}</Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.name}</Td>
+                                    <Td  className="text-sm font-medium text-gray-700">{event.eventId}</Td>
+                                    <Td  className="text-sm font-medium text-gray-700">{event.eventTitle}</Td>
+                                    <Td  className="text-sm font-medium text-gray-700">{event.employeeFirstName} {event.employeeLastName}</Td>
+                                    <Td  className="text-sm font-medium text-gray-700">{event.employeeEmailAddress}</Td>
+                                    <Td  className="text-sm font-medium text-gray-700">{event.eventDate}</Td>
                                     <Td>
                                         <Menu>
                                             <MenuButton as={Button} size="sm" variant="ghost">
@@ -121,13 +150,18 @@ const EmployeeEvents = () => {
                                                 </svg>
                                             </MenuButton>
                                             <MenuList>
-                                                <MenuItem className="text-sm font-medium text-gray-700">Edit</MenuItem>
+                                                <MenuItem 
+                                                onClick={() => {
+                                                    setSelectedEvent(event);
+                                                    onEditModalOpen();
+                                                }}
+                                                className="text-sm font-medium text-gray-700">Edit</MenuItem>
                                                 <MenuItem  
                                                 className="text-sm font-medium text-gray-700" 
                                                 color="red.500" 
                                                 onClick={() => {
-                                                    // setDeletingEventId(event.id);
-                                                    // onDeleteModalOpen();
+                                                    setDeletingEventId(event.eventId);
+                                                    onDeleteModalOpen();
                                                 }}>Delete</MenuItem>
                                             </MenuList>
                                         </Menu>
@@ -147,14 +181,21 @@ const EmployeeEvents = () => {
         events={events?.data || []}
         employees={employees}
         />
-        {/* <AddEvent isOpen={isOpen} onClose={onClose} fetchingEvents={fetchingEvents} />
+        <EditEmployeeEvent 
+        isOpen={isEditModalOpen}
+        onClose={onEditModalClose}
+        fetchingEvents={fetchingEmployeeEvents}
+        events={events?.data || []}
+        employees={employees}
+        selectedEvent={selectedEvent}
+        />
         <DeleteModal 
-        title="Delete Event"
+        title="Delete Employee Event"
         isLoading={isLoading}
         isOpen={isDeleteModalOpen} 
         onClose={onDeleteModalClose} 
         confirmAction={handleDeleteEvent} 
-        /> */}
+        />
     </div>
   )
 }

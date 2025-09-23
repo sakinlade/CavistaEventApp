@@ -9,54 +9,61 @@ import {
     ModalOverlay, 
     Select
 } from '@chakra-ui/react';
+import type { Employee, EmployeeEvent, Event } from '../utils/types';
 import { ErrorMessage, Form, Formik } from 'formik';
-import request from '../utils/httpsRequest';
 import { useUserAuthContext } from '../context/user/user.hook';
-import { EmployeeEventSchema } from '../utils/validationSchema';
+import request from '../utils/httpsRequest';
 import toast from 'react-hot-toast';
-import type { Employee, Event } from '../utils/types';
+import { EmployeeEventSchema } from '../utils/validationSchema';
+import { useState } from 'react';
 
-interface AddEventProps {
+interface EditEmployeeEventProps {
   isOpen: boolean;
+  selectedEvent: EmployeeEvent | null;
   onClose: () => void;
   events: Event[];
   employees: Employee[];
   fetchingEvents: () => void;
 }
 
-const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }: AddEventProps) => {
+const EditEmployeeEvent = ({isOpen, onClose, events, employees, selectedEvent, fetchingEvents}: EditEmployeeEventProps) => {
 
     const { token } = useUserAuthContext();
+    const [loading, setLoading] = useState(false);
     const initialValues = {
-       employeeId: '',
-       eventId: '',
-       eventDate: '',
+       employeeId: selectedEvent?.employeeId || '',
+       eventId: selectedEvent?.eventId?.toString() || '',
+       eventDate: selectedEvent?.eventDate?.split('T')[0] || '',
     }
 
     const handleSubmit = async (values: typeof initialValues) => {
+        setLoading(true);
         try {
             const payload = {
+                id: selectedEvent?.id,
                 employeeId: values.employeeId,
                 eventId: Number(values.eventId),
                 eventDate: values.eventDate,
             }
-          const response = await request({ token }).post('/api/EmployeeEvents', payload);
+          const response = await request({ token }).put('/api/EmployeeEvents', payload);
           if (response && response.status === 200) {
-            toast.success('Event added successfully!');
+            toast.success('Event updated successfully!');
             fetchingEvents();
             onClose();
           }
         } catch (error) {
-          console.error('Failed to add event:', error);
-          toast.error('Failed to add event. Please try again.');
+            setLoading(false);
+            console.error('Failed to update event:', error);
+            toast.error('Failed to update event. Please try again.');
+        } finally {
+            setLoading(false);
         }
     }
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+     <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>Add Employee Event</ModalHeader>
+            <ModalHeader>Edit Employee Event</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
             <Formik
@@ -124,7 +131,7 @@ const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }
                     className="mt-1 text-sm text-red-600"
                     />
                 </div>
-                 <div>
+                    <div>
                     <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700 mb-1">
                     Event Date
                     </label>
@@ -155,9 +162,9 @@ const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }
                     width="full"
                     bg={"red.600"}
                     color={"white"}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loading}
                     >
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                    {loading ? 'Submitting...' : 'Submit'}
                     </Button>
                 </div>
                 </Form>
@@ -169,4 +176,4 @@ const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }
   )
 }
 
-export default AddEmployeeEvent
+export default EditEmployeeEvent
