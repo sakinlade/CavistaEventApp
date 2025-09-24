@@ -43,6 +43,8 @@ export interface EmployeeEvent {
   employeeId: number;
   eventId: number;
   eventDate: string;
+  isApproved: boolean;
+  status: string;
   employeeFirstName: string;
   employeeLastName: string;
   employeeEmailAddress: string;

@@ -122,10 +122,16 @@ const Sidebar = () => {
         <div className="flex items-center px-2 py-3 w-full">
           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
             <span className="font-medium text-sm uppercase">{userName.charAt(0)}</span>
+            <span className="font-medium text-sm uppercase">{userName.charAt(1)}</span>
           </div>
           <div className="ml-3">
             <p className="text-sm font-medium capitalize">{userName}</p>
-            <p className="text-xs text-red-200 uppercase">{userRole}</p>
+            {
+              userRole?.includes('SuperAdmin') ?
+              <p className="text-xs text-red-200 uppercase">Super Admin</p>
+              :
+              <p className="text-xs text-red-200 uppercase">User</p>
+            }
           </div>
         </div>
       </div>

@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import request from '../utils/httpsRequest';
 import toast from 'react-hot-toast';
+import request from '../utils/httpsRequest';
 import { useUserAuthContext } from '../context/user/user.hook';
 import { UserAuthAction } from '../context/user/user-reducer';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -27,6 +27,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { jwtDecode } from 'jwt-decode';
 
 interface LoginFormValues {
   email: string;
@@ -62,7 +63,14 @@ const Login = () => {
         type: UserAuthAction.SET_TOKEN as keyof typeof UserAuthAction,
         payload: response?.data?.accessToken,
       });
-      navigate('/dashboard');
+      const decodedToken = jwtDecode<{ [key: string]: any }>(response?.data?.accessToken);
+      const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+      const userRole = decodedToken[roleClaim];
+      if (userRole?.includes('SuperAdmin')) {
+        navigate('/dashboard');
+      } else if(userRole === 'User'){
+        navigate('/events');
+      }
     }
    } catch (error) {
      toast.error('Login failed. Please try again.');

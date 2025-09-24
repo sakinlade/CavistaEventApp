@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
     Box, 
     Button, 
@@ -19,8 +19,7 @@ import {
     ModalFooter, 
     Input, 
     useDisclosure, 
-    Flex, 
-    Avatar, 
+    Flex,
     useColorModeValue, 
     Textarea, 
     Menu, 
@@ -30,6 +29,11 @@ import {
 } from "@chakra-ui/react";
 import { MdOutlineEdit } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
+import { useUserAuthContext } from "../context/user/user.hook";
+import { UserAuthAction } from "../context/user/user-reducer";
+import { jwtDecode } from "jwt-decode";
 
 const mockEvents = [
   { id: 1, name: "Birthday Party", message: "Celebrate with friends!", status: "Active" },
@@ -37,26 +41,42 @@ const mockEvents = [
   { id: 3, name: "Wedding", message: "Join us for the big day.", status: "Inactive" },
 ];
 
-const userProfile = {
-  name: "John Doe",
-  avatarUrl: "https://ui-avatars.com/api/?name=John+Doe&background=F87171&color=fff"
-};
-
 const Events = () => {
 
-  const [events, setEvents] = useState(mockEvents);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newEvent, setNewEvent] = useState({ name: "", message: "" });
+    const navigate = useNavigate();
+    const { token, dispatch } = useUserAuthContext();
+    const [events, setEvents] = useState(mockEvents);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [newEvent, setNewEvent] = useState({ name: "", message: "" });
 
-  const handleAddEvent = () => {
-    if (!newEvent.name || !newEvent.message) return;
-    setEvents([
-      ...events,
-      { id: events.length + 1, name: newEvent.name, message: newEvent.message, status: "Active" },
-    ]);
-    setNewEvent({ name: "", message: "" });
-    onClose();
-  };
+    const [userName, setUserName] = useState<string>("");
+    const [userRole, setUserRole] = useState<string>("");
+
+    useEffect(() => {
+    if (!token) return;
+    const decodedToken = jwtDecode<{ [key: string]: any }>(token);
+    const nameClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+    const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+    setUserName(decodedToken[nameClaim]);
+    setUserRole(decodedToken[roleClaim]);
+    }, [token]);
+    
+
+    const handleAddEvent = () => {
+        if (!newEvent.name || !newEvent.message) return;
+        setEvents([
+        ...events,
+        { id: events.length + 1, name: newEvent.name, message: newEvent.message, status: "Active" },
+        ]);
+        setNewEvent({ name: "", message: "" });
+        onClose();
+    };
+
+    const handleLogout = () => {
+      localStorage.removeItem('authToken');
+      dispatch({ type: UserAuthAction.LOG_OUT as keyof typeof UserAuthAction });
+      navigate('/');
+    }
 
   return (
     <Box 
@@ -64,15 +84,30 @@ const Events = () => {
     // bgGradient="linear(to-br, #f8fafc, #f87171, #fff)" 
     bg={useColorModeValue("gray.50", "gray.800")}
     pb={10}>
-      {/* Navbar */}
       <Flex as="nav" align="center" justify="space-between" px={8} py={4} bg="white" boxShadow="sm">
         <Flex align="center" gap={2}>
           <img src="/vite.svg" alt="Logo" style={{ width: 36, height: 36 }} />
-          <Text fontWeight="bold" fontSize="xl" color="red.500">Staff Celebration</Text>
+          <Text fontWeight="bold" fontSize="xl" color="red.500">Spark Hub</Text>
         </Flex>
-        <Flex align="center" gap={3}>
-          <Avatar size="sm" name={userProfile.name} src={userProfile.avatarUrl} />
-          <Text fontWeight="medium" color="gray.700">{userProfile.name}</Text>
+        <Flex align={"end"}>
+            <Flex gap={3} align="center" mr={3}>
+                <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center">
+                    <span className="font-medium text-sm uppercase text-white">{userName.charAt(0)}</span>
+                    <span className="font-medium text-sm uppercase text-white">{userName.charAt(1)}</span>
+                </div>
+                <Box>
+                    <Text fontWeight="medium" textTransform={"uppercase"} fontSize={"14px"} color="gray.700">{userName}</Text>
+                    <Text fontWeight="medium" textTransform={"lowercase"} fontSize={"14px"} color="gray.600">{userRole}</Text>
+                </Box>
+            </Flex>
+            <Menu>
+              <MenuButton as={Box} cursor="pointer">
+                <ChevronDownIcon className="w-6 h-6 text-gray-500 -mt-4" />
+            </MenuButton>
+            <MenuList>
+                <MenuItem onClick={() => {handleLogout()}}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
         </Flex>
       </Flex>
       {/* Main Content */}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar';
 import { 
+    Badge,
     Box, 
     Button,
     Input, 
@@ -28,6 +29,10 @@ import AddEmployeeEvent from '../components/AddEmployeeEvent';
 import DeleteModal from '../components/DeleteModal';
 import EditEmployeeEvent from '../components/EditEmployeeEvent';
 import Pagination from '../components/Pagination';
+import { FaCheck } from 'react-icons/fa';
+import { MdOutlineEdit } from 'react-icons/md';
+import { GoTrash } from 'react-icons/go';
+import ApprovalModal from '../components/ApprovalModal';
 
 const EmployeeEvents = () => {
 
@@ -45,6 +50,7 @@ const EmployeeEvents = () => {
     const [deletingEventId, setDeletingEventId] = useState<number>();
     const { isOpen: isDeleteModalOpen, onClose: onDeleteModalClose, onOpen: onDeleteModalOpen } = useDisclosure();
     const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
+    const { isOpen: isApprovalModalOpen, onClose: onApprovalModalClose, onOpen: onApprovalModalOpen } = useDisclosure();
 
     const fetchingEmployeeEvents = async () => {
         setLoading(true);
@@ -171,11 +177,11 @@ const EmployeeEvents = () => {
                 <Table variant='simple' border={"1px solid #edf2f7"}>
                     <Thead>
                         <Tr>
-                            <Th>S/N</Th>
                             <Th>Employee Name</Th>
                             <Th>Event Name</Th>
                             <Th>Employee Email</Th>
                             <Th>Event Date</Th>
+                            <Th>Status</Th>
                             <Th>Action</Th>
                         </Tr>
                     </Thead>
@@ -203,7 +209,6 @@ const EmployeeEvents = () => {
                         ) : (
                             employeeEvents?.item?.map((event: EmployeeEvent, index) => (
                                 <Tr key={index}>
-                                    <Td  className="text-sm font-medium text-gray-700">{index + 1}</Td>
                                     <Td>
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium uppercase">
@@ -216,9 +221,12 @@ const EmployeeEvents = () => {
                                             </div>
                                         </div>
                                     </Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.eventTitle}</Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.employeeEmailAddress}</Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.eventDate}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">{event.eventTitle}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">{event.employeeEmailAddress}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">{event.eventDate}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">
+                                        <Badge colorScheme={event.status === "Approved" ? "green" : "yellow"}>{event.status}</Badge>
+                                    </Td>
                                     <Td>
                                         <Menu>
                                             <MenuButton as={Button} size="sm" variant="ghost">
@@ -227,19 +235,38 @@ const EmployeeEvents = () => {
                                                 </svg>
                                             </MenuButton>
                                             <MenuList>
+                                                {
+                                                    !event.isApproved && (
+                                                        <MenuItem 
+                                                        onClick={() => {
+                                                            setSelectedEvent(event);
+                                                            onApprovalModalOpen();
+                                                        }}
+                                                        className="text-sm font-medium text-gray-700">
+                                                            <FaCheck className='w-4 h-4 text-gray-500 mr-2'/>
+                                                            Approve Event
+                                                        </MenuItem>
+                                                    )
+                                                }
                                                 <MenuItem 
                                                 onClick={() => {
                                                     setSelectedEvent(event);
                                                     onEditModalOpen();
                                                 }}
-                                                className="text-sm font-medium text-gray-700">Edit</MenuItem>
+                                                className="text-sm font-medium text-gray-700">
+                                                    <MdOutlineEdit className='w-4 h-4 mr-2'/>
+                                                    Edit Event
+                                                </MenuItem>
                                                 <MenuItem  
                                                 className="text-sm font-medium text-gray-700" 
                                                 color="red.500" 
                                                 onClick={() => {
                                                     setDeletingEventId(event.eventId);
                                                     onDeleteModalOpen();
-                                                }}>Delete</MenuItem>
+                                                }}>
+                                                    <GoTrash className='w-4 h-4 text-red-500 mr-2'/>
+                                                    Delete Event
+                                                </MenuItem>
                                             </MenuList>
                                         </Menu>
                                     </Td>
@@ -274,6 +301,12 @@ const EmployeeEvents = () => {
         fetchingEvents={fetchingEmployeeEvents}
         events={events?.data || []}
         employees={employees}
+        selectedEvent={selectedEvent}
+        />
+        <ApprovalModal 
+        isOpen={isApprovalModalOpen}
+        onClose={onApprovalModalClose}
+        fetchingEvents={fetchingEmployeeEvents}
         selectedEvent={selectedEvent}
         />
         <DeleteModal 
