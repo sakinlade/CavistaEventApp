@@ -43,8 +43,6 @@ const Dashboard = () => {
         }
     }, [token]);
 
-    console.log('Stats Data:', stats);
-
     return (
         <div className="flex min-h-screen">
             <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
@@ -250,7 +248,6 @@ const Dashboard = () => {
                         </>
                     )
                 }
-                
             </main>
         </div>
     );

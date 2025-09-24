@@ -78,15 +78,16 @@ const Login = () => {
       minH="100vh"
       align="center"
       justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
+      // bg={useColorModeValue("gray.50", "gray.800")}
+      bgGradient="linear(to-br, orange.50, red.100)"
     >
       <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
         <Stack align="center">
           <Heading fontSize="4xl" textAlign="center">
-            Welcome Back
+            Staff Celebration
           </Heading>
           <Text fontSize="lg" color="gray.600">
-            Sign in to your account
+            Welcome back! Sign in to your account
           </Text>
         </Stack>
         <Box

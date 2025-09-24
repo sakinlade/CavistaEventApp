@@ -9,6 +9,8 @@ import Events from './pages/EventsType'
 import RoleManagement from './pages/RoleManagement'
 import UserManagement from './pages/UserManagement'
 import EmployeeEvents from './pages/EmployeeEvents'
+import PageNotFound from "./pages/404";
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
 
@@ -18,12 +20,31 @@ function App() {
     <Routes>
       <Route element={<Login />} path='/' />
       <Route element={<Register />} path='/register' />
-      <Route element={<Dashboard />} path='/dashboard' />
-      <Route element={<EmployeeManagement />} path='/employee-management' />
-      <Route element={<Events />} path='/event-types' />
-      <Route element={<EmployeeEvents />} path='/employee-events' />
-      <Route element={<RoleManagement />} path='/role-management' />
-      <Route element={<UserManagement />} path='/user-management' />
+      <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<Dashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="employee-management" element={<EmployeeManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="event-types" element={<Events />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="employee-events" element={<EmployeeEvents />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="role-management" element={<RoleManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="user-management" element={<UserManagement />} />
+      </Route>
+
+      {/* <Route
+          element={<ProtectedRoute path="dashboard" roles={["SuperAdmin"]} />}
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route> */}
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
     </>
   )

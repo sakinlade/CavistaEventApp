@@ -18,36 +18,17 @@ UserAuthContext.displayName = "UserAuth";
 
 export function UserAuthContextProvider({ children }: IAuthProvider) {
     const [state, dispatch] = useReducer(UserAuthReducer, UserInitialState);
-
     useEffect(() => {
         checkAuthToken();
     }, []);
 
     const checkAuthToken = async () => {
-        // Check localStorage first
         const storedToken = localStorage.getItem('authToken');
-        //  const storedUser = localStorage.getItem('userData');
-        
         if (storedToken) {
             dispatch({
                 type: UserAuthAction.SET_TOKEN as keyof typeof UserAuthAction,
                 payload: storedToken,
             });
-            // if (storedUser) {
-            //     try {
-            //         const userData = JSON.parse(storedUser);
-            //         dispatch({
-            //             type: UserAuthAction.SET_USER as keyof typeof UserAuthAction,
-            //             payload: userData,
-            //         });
-            //     } catch (error) {
-            //         console.error('Error parsing stored user data:', error);
-            //         localStorage.removeItem('userData');
-            //     }
-            // } else {
-            //     // If no stored user but we have a token, fetch user data
-            //     await fetchUserData(storedToken);
-            // }
         } else {
             // Fallback to cookie if no localStorage token
             const cookieToken = await getCookie(userAuthCookieName);
@@ -66,7 +47,7 @@ export function UserAuthContextProvider({ children }: IAuthProvider) {
         });
     };
 
-    // const fetchUserData = async (token: string) => {
+    // const refreshToken = async (token: string) => {
     //     try {
     //         // Replace with your actual API endpoint
     //         const response = await request({ token }).get('/account/me');

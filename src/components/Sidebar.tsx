@@ -1,14 +1,17 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { MdEvent } from "react-icons/md";
 import { useUserAuthContext } from '../context/user/user.hook';
 import { useEffect, useState } from 'react';
 import { jwtDecode } from "jwt-decode";
+import { LuLogOut } from 'react-icons/lu';
+import { UserAuthAction } from '../context/user/user-reducer';
 
 const Sidebar = () => {
 
   const location = useLocation();
-  const { token } = useUserAuthContext();
+  const navigate = useNavigate();
+  const { token, dispatch } = useUserAuthContext();
   const currentPath = location.pathname;
 
   const [userName, setUserName] = useState<string>("");
@@ -65,17 +68,13 @@ const Sidebar = () => {
         <FaUser />
       ) 
     },
-    // { 
-    //   path: "/role-management", 
-    //   label: "Role Management", 
-    //   icon: (
-    //     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-    //       <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-    //     </svg>
-    //   ) 
-    // },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    dispatch({ type: UserAuthAction.LOG_OUT as keyof typeof UserAuthAction });
+    navigate('/');
+  }
   return (
     <aside className="w-64 bg-gradient-to-b from-red-700 to-red-900 text-white flex flex-col h-screen shadow-xl">
       <div className="p-6">
@@ -116,6 +115,10 @@ const Sidebar = () => {
       </nav>
       
       <div className="p-4 mt-auto border-t border-red-600">
+        <div onClick={handleLogout} className="flex mb-3 ml-2">
+          <LuLogOut className='w-5 h-5 text-red-50 hover:text-red-100' />
+          <span className="ml-2 text-sm text-red-50 hover:text-red-100 cursor-pointer">Logout</span>
+        </div>
         <div className="flex items-center px-2 py-3 w-full">
           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
             <span className="font-medium text-sm uppercase">{userName.charAt(0)}</span>
@@ -124,11 +127,6 @@ const Sidebar = () => {
             <p className="text-sm font-medium capitalize">{userName}</p>
             <p className="text-xs text-red-200 uppercase">{userRole}</p>
           </div>
-          {/* <button className="ml-3 rounded-full p-1 hover:bg-red-600">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-            </svg>
-          </button> */}
         </div>
       </div>
     </aside>
