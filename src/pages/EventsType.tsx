@@ -1,8 +1,10 @@
 import { 
     Badge,
     Box, 
-    Button, 
-    HStack, 
+    Button,
+    Input,
+    InputGroup,
+    InputLeftElement,
     Menu, 
     MenuButton, 
     MenuItem, 
@@ -31,6 +33,7 @@ const Events = () => {
     const { token } = useUserAuthContext();
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
+    const [searchTerm, setSearchTerm] = useState('');
     const [events, setEvents] = useState<EventResponse | null>(null);
     const [deletingEventId, setDeletingEventId] = useState<number>();
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -78,6 +81,11 @@ const Events = () => {
         }
     }
 
+    const handleSearch = () => {
+        // setCurrentPage(1);
+        fetchingEvents();
+    }
+
   return (
     <div className="flex min-h-screen">
          <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
@@ -85,13 +93,46 @@ const Events = () => {
         </div>
         <main className="flex-1 ml-64 p-6 overflow-y-auto h-screen">
             <Box mb={6}>
-                <HStack justify={"space-between"}>
-                    <Box>
-                        <Text className="text-2xl font-bold mb-1">Events Types</Text>
-                        <Text className="text-gray-700 mb-6">Manage your events types effectively.</Text>
-                    </Box>
-                    <Button isLoading={isLoading} onClick={onOpen} colorScheme="red" size="sm">Add Event</Button>
-                </HStack>
+                <Box>
+                    <Text className="text-2xl font-bold mb-1">Event Types</Text>
+                    <Text className="text-gray-700 mb-6">Manage your events types effectively.</Text>
+                </Box>
+                <div className="bg-white p-4 rounded-lg border! my-6">
+                    <div className="flex flex-col md:flex-row gap-4 justify-end">
+                        <div className="flex-1">
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </InputLeftElement>
+                                <Input
+                                    placeholder="Search event types..." 
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                />
+                            </InputGroup>
+                        </div>
+                        <Button 
+                            colorScheme="red" 
+                            onClick={handleSearch}
+                            isLoading={isLoading}
+                        >
+                            Search
+                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button 
+                            isLoading={isLoading} 
+                            border={"1px solid red"}
+                            color="red.500" 
+                            variant={"outline"}
+                            onClick={onOpen}>
+                                Create Event
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </Box>
             <TableContainer>
                 <Table variant='simple' border={"1px solid #edf2f7"}>

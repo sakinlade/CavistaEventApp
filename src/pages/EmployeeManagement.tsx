@@ -85,7 +85,7 @@ const EmployeeManagement = () => {
         }
     }  
 
-     const handleSearch = () => {
+    const handleSearch = () => {
         setCurrentPage(1);
         fetchingEmployees();
     }
@@ -128,7 +128,10 @@ const EmployeeManagement = () => {
                 <div className="flex items-center gap-2">
                     <Button 
                     isLoading={isLoading}
-                    border={"1px solid red"} bg={"white"} color="red.500" onClick={onBulkUploadOpen}>
+                    border={"1px solid red"} 
+                    bg={"white"} 
+                    color="red.500" 
+                    onClick={onBulkUploadOpen}>
                         Bulk Upload
                     </Button>
                     <Button 
@@ -236,7 +239,11 @@ const EmployeeManagement = () => {
             data={employees}
             />
         )}
-        <AddEmployee isOpen={isOpen} onClose={onClose} fetchingEmployees={fetchingEmployees} />
+        <AddEmployee 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        fetchingEmployees={fetchingEmployees} 
+        />
         <BulkUpload isOpen={isBulkUploadOpen} onClose={onBulkUploadClose} fetchingEmployees={fetchingEmployees} />
         <EditEmployee 
           isOpen={isEditModalOpen} 

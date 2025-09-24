@@ -78,8 +78,7 @@ const EmployeeEvents = () => {
         try {
             const response = await request({token}).get('/api/Employees');
             if (response && response.status === 200) {
-                console.log('Employees response data:', response.data);
-                setEmployees(response.data);
+                setEmployees(response.data?.item);
             }
         } catch (error) {
             console.error('Failed to fetch employees:', error);
@@ -156,6 +155,8 @@ const EmployeeEvents = () => {
                     <Button 
                         onClick={onOpen}
                         variant="outline" 
+                        border={"1px solid red"}
+                        color={"red.500"}
                         leftIcon={
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
