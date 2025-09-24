@@ -49,7 +49,7 @@ const EmployeeEvents = () => {
     const fetchingEmployeeEvents = async () => {
         setLoading(true);
         try {
-            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}&searchString=${searchTerm}`);
+            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}`);
             if (response && response.status === 200) {
                 setEmployeeEvents(response.data);
             }

@@ -5,12 +5,13 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import { Toaster } from 'react-hot-toast'
 import EmployeeManagement from './pages/EmployeeManagement'
-import Events from './pages/EventsType'
 import RoleManagement from './pages/RoleManagement'
 import UserManagement from './pages/UserManagement'
 import EmployeeEvents from './pages/EmployeeEvents'
 import PageNotFound from "./pages/404";
 import ProtectedRoute from './components/ProtectedRoute'
+import Events from './pages/Events'
+import EventTypes from './pages/EventsType'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
     <Routes>
       <Route element={<Login />} path='/' />
       <Route element={<Register />} path='/register' />
+      <Route element={<Events />} path='/events' />
       <Route element={<ProtectedRoute />}>
         <Route path="dashboard" element={<Dashboard />} />
       </Route>
@@ -27,7 +29,7 @@ function App() {
         <Route path="employee-management" element={<EmployeeManagement />} />
       </Route>
       <Route element={<ProtectedRoute />}>
-        <Route path="event-types" element={<Events />} />
+        <Route path="event-types" element={<EventTypes />} />
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="employee-events" element={<EmployeeEvents />} />
@@ -38,12 +40,6 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="user-management" element={<UserManagement />} />
       </Route>
-
-      {/* <Route
-          element={<ProtectedRoute path="dashboard" roles={["SuperAdmin"]} />}
-        >
-          <Route path="dashboard" element={<Dashboard />} />
-        </Route> */}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </>

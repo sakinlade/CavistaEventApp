@@ -28,7 +28,7 @@ import AddEvent from "../components/AddEvent";
 import DeleteModal from "../components/DeleteModal";
 import EditEvent from "../components/EditEvent";
 
-const Events = () => {
+const EventTypes = () => {
 
     const { token } = useUserAuthContext();
     const [isLoading, setIsLoading] = useState(false);
@@ -235,4 +235,4 @@ const Events = () => {
   )
 }
 
-export default Events
+export default EventTypes
