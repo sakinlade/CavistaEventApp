@@ -37,8 +37,8 @@ import ApprovalModal from '../components/ApprovalModal';
 const EmployeeEvents = () => {
 
     const { token } = useUserAuthContext();
-    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +55,7 @@ const EmployeeEvents = () => {
     const fetchingEmployeeEvents = async () => {
         setLoading(true);
         try {
-            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}`);
+            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}&searchString=${searchTerm}`);
             if (response && response.status === 200) {
                 setEmployeeEvents(response.data);
             }
@@ -118,7 +118,7 @@ const EmployeeEvents = () => {
         }
     }
 
-     const handleSearch = () => {
+    const handleSearch = () => {
         setCurrentPage(1);
         fetchingEmployeeEvents();
     }

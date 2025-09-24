@@ -24,6 +24,7 @@ interface ApprovalModalProps {
   fetchingEvents: () => void;
   selectedEvent: EmployeeEvent | null;
 }
+
 const ApprovalModal = ({isOpen, onClose, fetchingEvents, selectedEvent}: ApprovalModalProps) => {
     const { token } = useUserAuthContext();
     const [isLoading, setIsLoading] = useState(false);

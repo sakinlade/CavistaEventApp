@@ -9,23 +9,17 @@ import {
     Th, 
     Td, 
     Text, 
-    Badge, 
-    Modal, 
-    ModalOverlay, 
-    ModalContent, 
-    ModalHeader, 
-    ModalCloseButton, 
-    ModalBody, 
-    ModalFooter, 
-    Input, 
+    Badge,
     useDisclosure, 
     Flex,
-    useColorModeValue, 
-    Textarea, 
+    useColorModeValue,
     Menu, 
     MenuButton, 
     MenuList, 
-    MenuItem 
+    MenuItem, 
+    InputGroup,
+    InputLeftElement,
+    Input
 } from "@chakra-ui/react";
 import { MdOutlineEdit } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
@@ -34,43 +28,81 @@ import { useNavigate } from "react-router-dom";
 import { useUserAuthContext } from "../context/user/user.hook";
 import { UserAuthAction } from "../context/user/user-reducer";
 import { jwtDecode } from "jwt-decode";
+import request from "../utils/httpsRequest";
+import toast from "react-hot-toast";
+import Pagination from "../components/Pagination";
+import AddStaffEvent from "../components/AddStaffEvent";
+import type { EmployeeEvent, EmployeeEventsResponse, EventResponse } from "../utils/types";
+import EditStaffEvent from "../components/EditStaffEvent";
+import DeleteModal from "../components/DeleteModal";
 
-const mockEvents = [
-  { id: 1, name: "Birthday Party", message: "Celebrate with friends!", status: "Active" },
-  { id: 2, name: "Conference", message: "Tech talks and networking.", status: "Active" },
-  { id: 3, name: "Wedding", message: "Join us for the big day.", status: "Inactive" },
-];
-
+// 019967ec-0a5c-77f0-83a8-4a546161c95c
 const Events = () => {
 
     const navigate = useNavigate();
     const { token, dispatch } = useUserAuthContext();
-    const [events, setEvents] = useState(mockEvents);
+    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [deletingEventId, setDeletingEventId] = useState<number>();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [employeeId, setEmployeeId] = useState<string>("");
+    const [events, setEvents] = useState<EventResponse | null>(null);
+    const [employeeEvents, setEmployeeEvents] = useState<EmployeeEventsResponse | null>(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [newEvent, setNewEvent] = useState({ name: "", message: "" });
+    const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onClose: onEditModalClose } = useDisclosure();
+    const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure();
+    const [selectedEvent, setSelectedEvent] = useState<null | EmployeeEvent>(null);
 
     const [userName, setUserName] = useState<string>("");
     const [userRole, setUserRole] = useState<string>("");
 
     useEffect(() => {
-    if (!token) return;
-    const decodedToken = jwtDecode<{ [key: string]: any }>(token);
-    const nameClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
-    const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-    setUserName(decodedToken[nameClaim]);
-    setUserRole(decodedToken[roleClaim]);
+        if (!token) return;
+        const decodedToken = jwtDecode<{ [key: string]: any }>(token);
+        setEmployeeId(decodedToken.id);
+        const nameClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+        const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+        setUserName(decodedToken[nameClaim]);
+        setUserRole(decodedToken[roleClaim]);
     }, [token]);
-    
 
-    const handleAddEvent = () => {
-        if (!newEvent.name || !newEvent.message) return;
-        setEvents([
-        ...events,
-        { id: events.length + 1, name: newEvent.name, message: newEvent.message, status: "Active" },
-        ]);
-        setNewEvent({ name: "", message: "" });
-        onClose();
-    };
+    const fetchingEmployeeEvents = async () => {
+        setLoading(true);
+        try {
+            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}&searchString=${searchTerm}`);
+            if (response && response.status === 200) {
+                setEmployeeEvents(response.data);
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error('Failed to fetch events:', error);
+            toast.error('Failed to fetch events. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchingEvents = async () => {
+        try {
+            const response = await request({token}).get('/api/Events');
+            if (response && response.status === 200) {
+                setEvents(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch events:', error);
+            toast.error('Failed to fetch events. Please try again.');
+        }
+    }
+
+    useEffect(() => {
+        if (token) {
+            fetchingEmployeeEvents();
+            fetchingEvents();
+        }
+    }, [token, currentPage, pageSize]);
+
 
     const handleLogout = () => {
       localStorage.removeItem('authToken');
@@ -78,10 +110,33 @@ const Events = () => {
       navigate('/');
     }
 
+    const handleSearch = () => {
+        setCurrentPage(1);
+        fetchingEmployeeEvents();
+    }
+
+    const handleDeleteEvent = async () => {
+        if(!deletingEventId) return;
+        setIsLoading(true);
+        try {
+            const response = await request({ token }).delete(`/api/EmployeeEvents?id=${deletingEventId}`);
+            if (response && response.status === 200) {
+                toast.success('Employee event deleted successfully!');
+                fetchingEmployeeEvents();
+                onDeleteModalClose();
+            }
+        } catch (error) {
+            console.error('Failed to delete employee event:', error);
+            toast.error('Failed to delete employee event. Please try again.');
+        } finally{
+            setIsLoading(false);
+            setDeletingEventId(undefined);
+        }
+    }
+
   return (
     <Box 
     minH="100vh" 
-    // bgGradient="linear(to-br, #f8fafc, #f87171, #fff)" 
     bg={useColorModeValue("gray.50", "gray.800")}
     pb={10}>
       <Flex as="nav" align="center" justify="space-between" px={8} py={4} bg="white" boxShadow="sm">
@@ -111,96 +166,166 @@ const Events = () => {
         </Flex>
       </Flex>
       {/* Main Content */}
-      <Box maxW="900px" mx="auto" mt={10} p={8} bg="white" borderRadius="2xl" boxShadow="lg">
-        <Flex mb={8} justify="space-between" align="center">
-          <Text fontSize="2xl" fontWeight="bold" color="red.500">My Events</Text>
-          <Button colorScheme="red" size="md" borderRadius="full" px={6} onClick={onOpen} boxShadow="md">
-            + Add Event
-          </Button>
-        </Flex>
-        <Table variant="simple" size="md">
-          <Thead bg="gray.50">
-            <Tr>
-              <Th>S/N</Th>
-              <Th>Name</Th>
-              <Th>Message</Th>
-              <Th>Status</Th>
-              <Th>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {events.length === 0 ? (
-              <Tr>
-                <Td colSpan={4} textAlign="center">No events found.</Td>
-              </Tr>
-            ) : (
-              events.map((event, idx) => (
-                <Tr key={event.id} _hover={{ bg: "gray.50" }}>
-                  <Td fontWeight="medium">{idx + 1}</Td>
-                  <Td>{event.name}</Td>
-                  <Td maxW="200px" isTruncated>{event.message}</Td>
-                  <Td>
-                    <Badge px={3} py={1} borderRadius="full" colorScheme={event.status === "Active" ? "green" : "gray"} fontSize="sm">
-                      {event.status}
-                    </Badge>
-                  </Td>
-                  <Td>
-                    <Menu>
-                        <MenuButton as={Button} size="sm" variant="ghost">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+      <Box maxW="6xl" mx="auto" mt={10} p={8} borderRadius="2xl" border={"1px solid"} borderColor={useColorModeValue("gray.200", "gray.700")}>
+        <Text fontSize="2xl" fontWeight="bold" color="red.500" mb={5}>My Events</Text>
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+            <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1">
+                    <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                        </MenuButton>
-                        <MenuList>
-                            <MenuItem gap={2} fontSize={"sm"} color={"gray.600"}>
-                                <MdOutlineEdit className='w-5' />
-                                Edit
-                            </MenuItem>
-                            <MenuItem gap={2} fontSize={"sm"} color={"red.500"}>
-                                <GoTrash className='w-5' />
-                                Delete
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
-                  </Td>
+                        </InputLeftElement>
+                        <Input
+                            placeholder="Search events..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                    </InputGroup>
+                </div>
+                <Button 
+                    colorScheme="red" 
+                    onClick={handleSearch}
+                    isLoading={loading}
+                >
+                    Search
+                </Button>
+                <Button 
+                    onClick={onOpen}
+                    variant="outline" 
+                    border={"1px solid red"}
+                    color={"red.500"}
+                    leftIcon={
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    }
+                >
+                    Add New Event
+                </Button>
+            </div>
+        </div>
+        <Box bg={"white"}>
+            <Table variant="simple" size="md">
+            <Thead bg="gray.50">
+                <Tr>
+                <Th>S/N</Th>
+                <Th>Name</Th>
+                <Th>Message</Th>
+                <Th>Status</Th>
+                <Th>Action</Th>
                 </Tr>
-              ))
+            </Thead>
+            <Tbody>
+                {
+                loading ? (
+                    <tr>
+                        <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-center">
+                            <div className="flex justify-center items-center space-x-2">
+                                <svg className="animate-spin h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Loading events...</span>
+                            </div>
+                        </td>
+                    </tr>
+                ) :
+                employeeEvents?.item.length === 0 ? (
+                <Tr>
+                    <Td colSpan={4} textAlign="center">No events found.</Td>
+                </Tr>
+                ) : (
+                employeeEvents?.item.map((event) => (
+                    <Tr key={event.id} _hover={{ bg: "gray.50" }}>
+                        <Td>
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium uppercase">
+                                    {event.employeeFirstName?.charAt(0)}{event.employeeLastName?.charAt(0)}
+                                </div>
+                                <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">
+                                        {event.employeeFirstName} {event.employeeLastName}
+                                    </div>
+                                </div>
+                            </div>
+                        </Td>
+                        <Td className="text-sm font-medium text-gray-700">{event.eventTitle}</Td>
+                        <Td className="text-sm font-medium text-gray-700">{event.employeeEmailAddress}</Td>
+                        <Td className="text-sm font-medium text-gray-700">{event.eventDate}</Td>
+                        <Td className="text-sm font-medium text-gray-700">
+                            <Badge colorScheme={event.status === "Approved" ? "green" : "yellow"}>{event.status}</Badge>
+                        </Td>
+                        <Td>
+                            <Menu>
+                                <MenuButton as={Button} size="sm" variant="ghost">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    </svg>
+                                </MenuButton>
+                                <MenuList>
+                                    <MenuItem 
+                                    onClick={() => {
+                                        setSelectedEvent(event);
+                                        onEditModalOpen();
+                                    }}
+                                    gap={2} fontSize={"sm"} color={"gray.600"}>
+                                        <MdOutlineEdit className='w-5' />
+                                        Edit
+                                    </MenuItem>
+                                    <MenuItem 
+                                    onClick={() => {
+                                        setDeletingEventId(event.id);
+                                        onDeleteModalOpen();
+                                    }}
+                                    gap={2} fontSize={"sm"} color={"red.500"}>
+                                        <GoTrash className='w-5' />
+                                        Delete
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        </Td>
+                    </Tr>
+                ))
+                )}
+            </Tbody>
+            </Table>
+            {employeeEvents && employeeEvents?.totalPages > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    setPageSize={setPageSize}
+                    pageSize={pageSize}
+                    data={employeeEvents}
+                />
             )}
-          </Tbody>
-        </Table>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent borderRadius="2xl">
-            <ModalHeader fontWeight="bold" color="red.500">Add New Event</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Input
-                placeholder="Event Name"
-                mb={4}
-                value={newEvent.name}
-                onChange={e => setNewEvent({ ...newEvent, name: e.target.value })}
-                size="lg"
-                borderRadius="xl"
-                focusBorderColor="red.400"
-              />
-              <Textarea
-                placeholder="Event Message"
-                value={newEvent.message}
-                onChange={e => setNewEvent({ ...newEvent, message: e.target.value })}
-                size="lg"
-                borderRadius="xl"
-                focusBorderColor="red.400"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="red" mr={3} onClick={handleAddEvent} borderRadius="full" px={6}>Add</Button>
-              <Button variant="ghost" onClick={onClose} borderRadius="full">Cancel</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        </Box>
+        <AddStaffEvent
+            isOpen={isOpen} 
+            onClose={onClose} 
+            fetchingEvents={fetchingEmployeeEvents} 
+            events={events?.data || []}
+            employeeId={employeeId}
+        />
+        <EditStaffEvent
+            isOpen={isEditModalOpen}
+            onClose={onEditModalClose}
+            fetchingEvents={fetchingEmployeeEvents}
+            events={events?.data || []}
+            selectedEvent={selectedEvent}
+        />  
+        <DeleteModal 
+            isOpen={isDeleteModalOpen}
+            onClose={onDeleteModalClose}
+            isLoading={isLoading}
+            title="Delete Event"
+            confirmAction={handleDeleteEvent}
+        />
       </Box>
     </Box>
   );
 }
 
-export default Events
+export default Events;
