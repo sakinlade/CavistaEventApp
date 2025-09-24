@@ -27,12 +27,15 @@ import type { Employee, EmployeeEvent, EmployeeEventsResponse, EventResponse } f
 import AddEmployeeEvent from '../components/AddEmployeeEvent';
 import DeleteModal from '../components/DeleteModal';
 import EditEmployeeEvent from '../components/EditEmployeeEvent';
+import Pagination from '../components/Pagination';
 
 const EmployeeEvents = () => {
 
     const { token } = useUserAuthContext();
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -46,7 +49,7 @@ const EmployeeEvents = () => {
     const fetchingEmployeeEvents = async () => {
         setLoading(true);
         try {
-            const response = await request({token}).get('/api/EmployeeEvents');
+            const response = await request({token}).get(`/api/EmployeeEvents?index=${currentPage}&pageSize=${pageSize}&searchString=${searchTerm}`);
             if (response && response.status === 200) {
                 setEmployeeEvents(response.data);
             }
@@ -75,6 +78,7 @@ const EmployeeEvents = () => {
         try {
             const response = await request({token}).get('/api/Employees');
             if (response && response.status === 200) {
+                console.log('Employees response data:', response.data);
                 setEmployees(response.data);
             }
         } catch (error) {
@@ -88,7 +92,7 @@ const EmployeeEvents = () => {
             fetchingEvents();
             fetchingEmployees();
         }
-    }, [token]);
+    }, [token, currentPage, pageSize]);
 
     const handleDeleteEvent = async () => {
         if(!deletingEventId) return;
@@ -110,8 +114,8 @@ const EmployeeEvents = () => {
     }
 
      const handleSearch = () => {
-        // setCurrentPage(1); // Reset to first page when searching
-        // fetchUsers(1, pageSize, searchTerm);
+        setCurrentPage(1);
+        fetchingEmployeeEvents();
     }
 
   return (
@@ -189,14 +193,14 @@ const EmployeeEvents = () => {
                                 </td>
                             </tr>
                         ) :
-                        employeeEvents?.data.length === 0 ? (
+                        employeeEvents?.item.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
                                     No employee events found.
                                 </td>
                             </tr>
                         ) : (
-                            employeeEvents?.data?.map((event: EmployeeEvent, index) => (
+                            employeeEvents?.item?.map((event: EmployeeEvent, index) => (
                                 <Tr key={index}>
                                     <Td  className="text-sm font-medium text-gray-700">{index + 1}</Td>
                                     <Td>
@@ -245,6 +249,16 @@ const EmployeeEvents = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
+            {/* Pagination */}
+            {employeeEvents && employeeEvents?.totalPages > 0 && (
+                <Pagination 
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                setPageSize={setPageSize}
+                pageSize={pageSize}
+                data={employeeEvents}
+                />
+            )}
         </main>
         <AddEmployeeEvent 
         isOpen={isOpen} 

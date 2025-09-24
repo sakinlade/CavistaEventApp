@@ -17,6 +17,14 @@ export interface Employee {
   emailAddress: string;
 }
 
+export interface EmployeeResponse {
+  item: Employee[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  pageIndex: number;
+  totalPages: number;
+}
+
 export interface Event {
   id: number;
   name: string;
@@ -41,11 +49,12 @@ export interface EmployeeEvent {
 }
 
 export interface EmployeeEventsResponse {
-  data: EmployeeEvent[];
-  errorMessage: string;
-  isSuccessful: boolean;
-  messageMessage: string;
-} 
+  item: EmployeeEvent[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  pageIndex: number;
+  totalPages: number;
+}
 
 export interface Role {
   id: number;

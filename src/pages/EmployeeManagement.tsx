@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar"
 import { useUserAuthContext } from "../context/user/user.hook";
 import request from "../utils/httpsRequest";
-import type { Employee } from "../utils/types";
+import type { Employee, EmployeeResponse } from "../utils/types";
 import {
   Table,
   Thead,
@@ -20,6 +20,9 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  InputGroup,
+  InputLeftElement,
+  Badge,
 } from '@chakra-ui/react'
 import AddEmployee from "../components/AddEmployee";
 import BulkUpload from "../components/BulkUpload";
@@ -27,13 +30,17 @@ import { MdOutlineEdit } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
 import DeleteModal from "../components/DeleteModal";
 import EditEmployee from "../components/EditEmployee";
+import Pagination from "../components/Pagination";
 
 const EmployeeManagement = () => {
 
     const { token } = useUserAuthContext();
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
-    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [pageSize, setPageSize] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [employees, setEmployees] = useState<EmployeeResponse | null>(null);
     const [deletingUserId, setDeletingUserId] = useState<number>();
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
@@ -43,9 +50,9 @@ const EmployeeManagement = () => {
     const fetchingEmployees = async () => {
         setIsLoading(true);
         try {
-            const response = await request({token}).get('/api/Employees');
+            const response = await request({token}).get(`/api/Employees?index=${currentPage}&pageSize=${pageSize}&searchString=${searchTerm}`);
             if (response && response.status === 200) {
-                setEmployees(response.data?.data);
+                setEmployees(response.data);
             }
         } catch (error) {
             setIsLoading(false);
@@ -59,7 +66,7 @@ const EmployeeManagement = () => {
         if (token) {
             fetchingEmployees();
         }
-    }, [token]);
+    }, [token, currentPage, pageSize]);
 
     const handleDelete = async () => {
         if(!deletingUserId) return;
@@ -78,6 +85,12 @@ const EmployeeManagement = () => {
         }
     }  
 
+     const handleSearch = () => {
+        setCurrentPage(1);
+        fetchingEmployees();
+    }
+
+
   return (
     <div className="flex min-h-screen">
       <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
@@ -88,21 +101,42 @@ const EmployeeManagement = () => {
           <Text className="text-2xl font-bold mb-1">Employee Management</Text>
           <Text className="text-gray-700 mb-6">Manage your employees effectively.</Text>
         </Box>
-        <div className="flex items-center justify-between mb-5">
-            <div className="">
-                <Input type="text" placeholder="Search employees..." w={"400px"}/>
-            </div>
-            <div className="flex items-center gap-2">
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+            <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1">
+                    <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </InputLeftElement>
+                        <Input
+                            placeholder="Search employee..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                    </InputGroup>
+                </div>
                 <Button 
-                isLoading={isLoading}
-                border={"1px solid red"} bg={"white"} color="red.500" onClick={onBulkUploadOpen}>
-                    Bulk Upload
+                    colorScheme="red" 
+                    onClick={handleSearch}
+                    isLoading={isLoading}
+                >
+                    Search
                 </Button>
-                <Button 
-                isLoading={isLoading}
-                bg="red.500" color="white" onClick={onOpen}>
-                    Add Employee
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button 
+                    isLoading={isLoading}
+                    border={"1px solid red"} bg={"white"} color="red.500" onClick={onBulkUploadOpen}>
+                        Bulk Upload
+                    </Button>
+                    <Button 
+                    isLoading={isLoading}
+                    bg="red.500" color="white" onClick={onOpen}>
+                        Add Employee
+                    </Button>
+                </div>
             </div>
         </div>
         <TableContainer>
@@ -111,6 +145,7 @@ const EmployeeManagement = () => {
                     <Tr>
                         <Th>Name</Th>
                         <Th>Email</Th>
+                        <Th>Status</Th>
                         <Th>Action</Th>
                     </Tr>
                 </Thead>
@@ -129,14 +164,14 @@ const EmployeeManagement = () => {
                             </td>
                         </tr>
                     ) : 
-                    employees?.length === 0 ? (
+                    employees?.item?.length === 0 ? (
                         <tr>
                             <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
                                 No employees found.
                             </td>
                         </tr>
                     ) : (
-                        employees?.map((employee) => (
+                        employees?.item?.map((employee) => (
                             <Tr key={employee.id}>
                                 <Td>
                                     <div className="flex items-center">
@@ -151,6 +186,11 @@ const EmployeeManagement = () => {
                                     </div>
                                 </Td>
                                 <Td className="text-sm font-medium text-gray-700">{employee.emailAddress}</Td>
+                                <Td className="text-sm font-medium text-gray-700">
+                                    <Badge colorScheme={"green"} variant="subtle">
+                                        Active
+                                    </Badge>
+                                </Td>
                                 <Td className="text-sm font-medium text-gray-700">
                                     <Menu>
                                         <MenuButton as={Button} size="sm" variant="ghost">
@@ -187,6 +227,15 @@ const EmployeeManagement = () => {
                 </Tbody>
             </Table>
         </TableContainer>
+        {employees && employees?.totalPages > 0 && (
+            <Pagination 
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            setPageSize={setPageSize}
+            pageSize={pageSize}
+            data={employees}
+            />
+        )}
         <AddEmployee isOpen={isOpen} onClose={onClose} fetchingEmployees={fetchingEmployees} />
         <BulkUpload isOpen={isBulkUploadOpen} onClose={onBulkUploadClose} fetchingEmployees={fetchingEmployees} />
         <EditEmployee 

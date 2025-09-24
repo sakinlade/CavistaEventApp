@@ -1,4 +1,5 @@
 import { 
+    Badge,
     Box, 
     Button, 
     HStack, 
@@ -95,6 +96,7 @@ const Events = () => {
                         <Tr>
                             <Th>ID</Th>
                             <Th>Name</Th>
+                            <Th>Status</Th>
                             <Th>Action</Th>
                         </Tr>
                     </Thead>
@@ -124,6 +126,11 @@ const Events = () => {
                                 <Tr key={event.id}>
                                     <Td  className="text-sm font-medium text-gray-700">{event.id}</Td>
                                     <Td  className="text-sm font-medium text-gray-700">{event.name}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">
+                                        <Badge colorScheme={"green"} variant="subtle">
+                                            Active
+                                        </Badge>
+                                    </Td>
                                     <Td>
                                         <Menu>
                                             <MenuButton as={Button} size="sm" variant="ghost">
