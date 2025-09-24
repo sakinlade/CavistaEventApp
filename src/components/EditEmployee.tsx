@@ -14,59 +14,69 @@ import { useUserAuthContext } from '../context/user/user.hook';
 import { EmployeeSchema } from '../utils/validationSchema';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
+import type { Employee } from '../utils/types';
 
-interface AddEmployeeProps {
+
+interface EditEmployeeProps {
   isOpen: boolean;
   onClose: () => void;
+  employee: Employee | null;
   fetchingEmployees: () => void;
 }
 
-const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) => {
+const EditEmployee = ({ isOpen, onClose, employee, fetchingEmployees }: EditEmployeeProps) => {
 
-  const { token } = useUserAuthContext();
-  const [loading, setLoading] = useState(false);
-  const initialValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-  }
-
-  const handleSubmit = async (values: typeof initialValues) => {
-    setLoading(true);
-    try {
-      const response = await request({ token }).post('/api/Employees', values);
-      if (response && response.status === 201) {
-        toast.success('Employee added successfully!');
-        fetchingEmployees();
-        onClose();
-      }
-    } catch (error) {
-      setLoading(false);
-      console.error('Failed to add employee:', error);
-      toast.error('Failed to add employee. Please try again.');
-    } finally {
-      setLoading(false);
+    const { token } = useUserAuthContext();
+    const [loading, setLoading] = useState(false);
+    const initialValues = {
+        firstName: employee?.firstName || '',
+        lastName: employee?.lastName || '',
+        email: employee?.emailAddress || '',
     }
-  }
-  return (
+
+    const handleSubmit = async (values: typeof initialValues) => {
+        setLoading(true);
+        const payload = {
+            id: employee?.id,
+            firstName: values.firstName,
+            lastName: values.lastName,
+            emailAddress: values.email,
+        }
+        try {
+            const response = await request({ token }).put(`/api/Employees`, payload);
+            if (response && response.status === 200) {
+                toast.success('Employee updated successfully!');
+                fetchingEmployees();
+                onClose();
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error('Failed to update employee:', error);
+            toast.error('Failed to update employee. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
     <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Employee</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+            <ModalHeader>Edit Employee</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
             <Formik
             initialValues={initialValues}
             validationSchema={EmployeeSchema}
             onSubmit={handleSubmit}
             >
             {({ isSubmitting, errors, touched, handleBlur, handleChange, values }) => (
-              <Form className="space-y-6">
+                <Form className="space-y-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email address
-                  </label>
-                  <Input
+                    </label>
+                    <Input
                     id="email"
                     name="email"
                     type="email"
@@ -75,23 +85,23 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
                     onChange={handleChange}
                     value={values.email}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
-                      errors.email && touched.email
+                        errors.email && touched.email
                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
                     } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm transition-colors`}
                     placeholder="Enter your email"
-                  />
-                  <ErrorMessage
+                    />
+                    <ErrorMessage
                     name="email"
                     component="div"
                     className="mt-1 text-sm text-red-600"
-                  />
+                    />
                 </div>
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                     First Name
-                  </label>
-                  <Input
+                    </label>
+                    <Input
                     id="firstName"
                     name="firstName"
                     type="text"
@@ -100,23 +110,23 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
                     onChange={handleChange}
                     value={values.firstName}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
-                      errors.firstName && touched.firstName
+                        errors.firstName && touched.firstName
                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
                     } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm transition-colors`}
                     placeholder="Enter your first name"
-                  />
-                  <ErrorMessage
+                    />
+                    <ErrorMessage
                     name="firstName"
                     component="div"
                     className="mt-1 text-sm text-red-600"
-                  />
+                    />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                     Last Name
-                  </label>
-                  <Input
+                    </label>
+                    <Input
                     id="lastName"
                     name="lastName"
                     type="text"
@@ -125,37 +135,37 @@ const AddEmployee = ({ isOpen, onClose, fetchingEmployees }: AddEmployeeProps) =
                     onChange={handleChange}
                     value={values.lastName}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
-                      errors.lastName && touched.lastName
+                        errors.lastName && touched.lastName
                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
                     } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm transition-colors`}
                     placeholder="Enter your last name"
-                  />
-                  <ErrorMessage
+                    />
+                    <ErrorMessage
                     name="lastName"
                     component="div"
                     className="mt-1 text-sm text-red-600"
-                  />
+                    />
                 </div>
                 <div className='mb-6'>
-                  <Button
+                    <Button
                     type="submit"
                     width="full"
                     bg={"red.600"}
                     color={"white"}
                     isLoading={loading}
                     disabled={isSubmitting || loading}
-                  >
+                    >
                     {isSubmitting ? 'Submitting...' : 'Submit'}
-                  </Button>
+                    </Button>
                 </div>
-              </Form>
+                </Form>
             )}
-          </Formik>
-          </ModalBody>
+            </Formik>
+            </ModalBody>
         </ModalContent>
     </Modal>
   )
 }
 
-export default AddEmployee
+export default EditEmployee

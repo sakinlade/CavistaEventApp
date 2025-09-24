@@ -16,24 +16,36 @@ import {
   Box,
   Button,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react'
 import AddEmployee from "../components/AddEmployee";
 import BulkUpload from "../components/BulkUpload";
+import { MdOutlineEdit } from "react-icons/md";
+import { GoTrash } from "react-icons/go";
+import DeleteModal from "../components/DeleteModal";
+import EditEmployee from "../components/EditEmployee";
 
 const EmployeeManagement = () => {
 
     const { token } = useUserAuthContext();
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
-    const { isOpen: isBulkUploadOpen, onClose: onBulkUploadClose, onOpen: onBulkUploadOpen } = useDisclosure();
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [deletingUserId, setDeletingUserId] = useState<number>();
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
+    const { isOpen: isBulkUploadOpen, onClose: onBulkUploadClose, onOpen: onBulkUploadOpen } = useDisclosure();
+    const { isOpen: isDeleteModalOpen, onClose: onDeleteModalClose, onOpen: onDeleteModalOpen } = useDisclosure();
 
     const fetchingEmployees = async () => {
         setIsLoading(true);
         try {
             const response = await request({token}).get('/api/Employees');
             if (response && response.status === 200) {
-                setEmployees(response.data);
+                setEmployees(response.data?.data);
             }
         } catch (error) {
             setIsLoading(false);
@@ -48,7 +60,24 @@ const EmployeeManagement = () => {
             fetchingEmployees();
         }
     }, [token]);
-    
+
+    const handleDelete = async () => {
+        if(!deletingUserId) return;
+        setIsLoading(true);
+        try {
+            const response = await request({ token }).delete(`/api/Employees/${deletingUserId}`);
+            if (response && response.status === 200) {
+                fetchingEmployees();
+                onDeleteModalClose();
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.error('Failed to delete employee:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }  
+
   return (
     <div className="flex min-h-screen">
       <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
@@ -82,7 +111,7 @@ const EmployeeManagement = () => {
                     <Tr>
                         <Th>Name</Th>
                         <Th>Email</Th>
-                        <Th>ID</Th>
+                        <Th>Action</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -100,14 +129,14 @@ const EmployeeManagement = () => {
                             </td>
                         </tr>
                     ) : 
-                    employees.length === 0 ? (
+                    employees?.length === 0 ? (
                         <tr>
                             <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
                                 No employees found.
                             </td>
                         </tr>
                     ) : (
-                        employees.map((employee) => (
+                        employees?.map((employee) => (
                             <Tr key={employee.id}>
                                 <Td>
                                     <div className="flex items-center">
@@ -122,7 +151,35 @@ const EmployeeManagement = () => {
                                     </div>
                                 </Td>
                                 <Td className="text-sm font-medium text-gray-700">{employee.emailAddress}</Td>
-                                <Td className="text-sm font-medium text-gray-700">{employee.id}</Td>
+                                <Td className="text-sm font-medium text-gray-700">
+                                    <Menu>
+                                        <MenuButton as={Button} size="sm" variant="ghost">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                            </svg>
+                                        </MenuButton>
+                                        <MenuList>
+                                            <MenuItem 
+                                            onClick={() => {
+                                                setSelectedEmployee(employee);
+                                                onEditModalOpen();
+                                            }}
+                                            gap={2} fontSize={"sm"} color={"gray.600"}>
+                                                <MdOutlineEdit className='w-5' />
+                                                Edit
+                                            </MenuItem>
+                                            <MenuItem 
+                                            onClick={() => {
+                                                setDeletingUserId(employee.id);
+                                                onDeleteModalOpen();
+                                            }}
+                                            gap={2} fontSize={"sm"} color={"red.500"}>
+                                                <GoTrash className='w-5' />
+                                                Delete
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </Td>
                             </Tr>
                         ))
                     )
@@ -132,6 +189,19 @@ const EmployeeManagement = () => {
         </TableContainer>
         <AddEmployee isOpen={isOpen} onClose={onClose} fetchingEmployees={fetchingEmployees} />
         <BulkUpload isOpen={isBulkUploadOpen} onClose={onBulkUploadClose} fetchingEmployees={fetchingEmployees} />
+        <EditEmployee 
+          isOpen={isEditModalOpen} 
+          onClose={onEditModalClose} 
+          employee={selectedEmployee} 
+          fetchingEmployees={fetchingEmployees} 
+        />
+        <DeleteModal 
+            title="Delete Employee"
+            isOpen={isDeleteModalOpen} 
+            onClose={onDeleteModalClose} 
+            confirmAction={handleDelete} 
+            isLoading={isLoading}
+        />
       </main>
     </div>
   )

@@ -6,13 +6,6 @@ import request from '../utils/httpsRequest';
 import { useUserAuthContext } from '../context/user/user.hook';
 import toast from 'react-hot-toast';
 
- // Mock data for upcoming events
-const upcomingEvents = [
-    { id: 1, title: "Solomon Akinlade", date: "Oct 15, 2025", type: "Birthday" },
-    { id: 2, title: "Mohammed Aliyu", date: "Sep 30, 2025", type: "Birthday" },
-    { id: 3, title: "Ebuka Larson", date: "Oct 5, 2025", type: "Anniversay" }
-];
-
 // Mock data for recent activities
 const recentActivities = [
     { id: 1, user: "Alex Johnson", action: "added a new employee", time: "2 hours ago" },
@@ -49,6 +42,8 @@ const Dashboard = () => {
             fetchingEvents();
         }
     }, [token]);
+
+    console.log('Stats Data:', stats);
 
     return (
         <div className="flex min-h-screen">
@@ -177,8 +172,9 @@ const Dashboard = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Upcoming Events Section */}
                                 <div className="lg:col-span-2 bg-white rounded-lg shadow-sm">
-                                    <div className="border-b px-6 py-4">
+                                    <div className="border-b px-6 py-4 space-y-2">
                                         <Text className="text-lg font-semibold text-gray-800">Upcoming Events</Text>
+                                        <Text className="text-sm font-medium text-gray-700">List of upcoming event this week</Text>
                                     </div>
                                     <div className="p-6">
                                         <table className="min-w-full divide-y divide-gray-200">
@@ -190,13 +186,13 @@ const Dashboard = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {upcomingEvents.map((event) => (
-                                                    <tr key={event.id}>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.title}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{event.date}</td>
+                                                {stats?.eventsForTheWeek?.map((event: any, index: number) => (
+                                                    <tr key={index}>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event?.employeeFirstName} {event?.employeeLastName}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{event.eventDate}</td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                                {event.type}
+                                                                {event.eventTitle}
                                                             </span>
                                                         </td>
                                                     </tr>
@@ -204,7 +200,7 @@ const Dashboard = () => {
                                             </tbody>
                                         </table>
                                         <div className="mt-4 flex justify-center">
-                                            <button onClick={() => navigate('/events')} className="text-sm text-red-600 hover:text-red-700 font-medium">
+                                            <button onClick={() => navigate('/employee-events')} className="text-sm text-red-600 hover:text-red-700 font-medium">
                                                 View all events →
                                             </button>
                                         </div>

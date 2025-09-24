@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar';
 import { 
     Box, 
-    Button, 
-    HStack, 
+    Button,
+    Input, 
+    InputGroup, 
+    InputLeftElement, 
     Menu, 
     MenuButton, 
     MenuItem, 
@@ -29,6 +31,8 @@ import EditEmployeeEvent from '../components/EditEmployeeEvent';
 const EmployeeEvents = () => {
 
     const { token } = useUserAuthContext();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onClose, onOpen } = useDisclosure();
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -40,14 +44,18 @@ const EmployeeEvents = () => {
     const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
 
     const fetchingEmployeeEvents = async () => {
+        setLoading(true);
         try {
             const response = await request({token}).get('/api/EmployeeEvents');
             if (response && response.status === 200) {
                 setEmployeeEvents(response.data);
             }
         } catch (error) {
+            setLoading(false);
             console.error('Failed to fetch events:', error);
             toast.error('Failed to fetch events. Please try again.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -101,6 +109,11 @@ const EmployeeEvents = () => {
         }
     }
 
+     const handleSearch = () => {
+        // setCurrentPage(1); // Reset to first page when searching
+        // fetchUsers(1, pageSize, searchTerm);
+    }
+
   return (
     <div className="flex min-h-screen">
         <div className="fixed left-0 top-0 h-screen w-64 z-20 bg-white shadow-lg">
@@ -108,21 +121,54 @@ const EmployeeEvents = () => {
         </div>
         <main className="flex-1 ml-64 p-6 overflow-y-auto h-screen">
             <Box mb={6}>
-                <HStack justify={"space-between"}>
-                    <Box>
-                        <Text className="text-2xl font-bold mb-1">Employee Events</Text>
-                        <Text className="text-gray-700 mb-6">Manage your events effectively.</Text>
-                    </Box>
-                    <Button onClick={onOpen} colorScheme="red" size="sm">Add Employee Event</Button>
-                </HStack>
+                <Text className="text-2xl font-bold mb-1">Employee Events</Text>
+                <Text className="text-gray-700 mb-6">Manage your events effectively.</Text> 
             </Box>
+            {/* Search and Filters */}
+            <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                    <div className="flex-1">
+                        <InputGroup>
+                            <InputLeftElement pointerEvents="none">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </InputLeftElement>
+                            <Input
+                                placeholder="Search events..." 
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                        </InputGroup>
+                    </div>
+                    <Button 
+                        colorScheme="red" 
+                        onClick={handleSearch}
+                        isLoading={isLoading || loading}
+                    >
+                        Search
+                    </Button>
+                    <Button 
+                        onClick={onOpen}
+                        variant="outline" 
+                        leftIcon={
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        }
+                    >
+                        Add Employee Event
+                    </Button>
+                </div>
+            </div>
             <TableContainer>
                 <Table variant='simple' border={"1px solid #edf2f7"}>
                     <Thead>
                         <Tr>
-                            <Th>ID</Th>
-                            <Th>Event Name</Th>
+                            <Th>S/N</Th>
                             <Th>Employee Name</Th>
+                            <Th>Event Name</Th>
                             <Th>Employee Email</Th>
                             <Th>Event Date</Th>
                             <Th>Action</Th>
@@ -130,6 +176,19 @@ const EmployeeEvents = () => {
                     </Thead>
                     <Tbody>
                         {
+                        loading ? (
+                            <tr>
+                                <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-center">
+                                    <div className="flex justify-center items-center space-x-2">
+                                        <svg className="animate-spin h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Loading events...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        ) :
                         employeeEvents?.data.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="py-4 px-4 text-center text-gray-500">
@@ -137,11 +196,22 @@ const EmployeeEvents = () => {
                                 </td>
                             </tr>
                         ) : (
-                            employeeEvents?.data?.map((event: EmployeeEvent) => (
-                                <Tr key={event.id}>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.eventId}</Td>
+                            employeeEvents?.data?.map((event: EmployeeEvent, index) => (
+                                <Tr key={index}>
+                                    <Td  className="text-sm font-medium text-gray-700">{index + 1}</Td>
+                                    <Td>
+                                        <div className="flex items-center">
+                                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium uppercase">
+                                                {event.employeeFirstName?.charAt(0)}{event.employeeLastName?.charAt(0)}
+                                            </div>
+                                            <div className="ml-4">
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {event.employeeFirstName} {event.employeeLastName}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Td>
                                     <Td  className="text-sm font-medium text-gray-700">{event.eventTitle}</Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.employeeFirstName} {event.employeeLastName}</Td>
                                     <Td  className="text-sm font-medium text-gray-700">{event.employeeEmailAddress}</Td>
                                     <Td  className="text-sm font-medium text-gray-700">{event.eventDate}</Td>
                                     <Td>
