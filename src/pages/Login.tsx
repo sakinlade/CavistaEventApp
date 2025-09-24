@@ -63,6 +63,8 @@ const Login = () => {
         type: UserAuthAction.SET_TOKEN as keyof typeof UserAuthAction,
         payload: response?.data?.accessToken,
       });
+      localStorage.setItem('refreshToken', response?.data?.refreshToken);
+      // Decode JWT to get user role
       const decodedToken = jwtDecode<{ [key: string]: any }>(response?.data?.accessToken);
       const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
       const userRole = decodedToken[roleClaim];
