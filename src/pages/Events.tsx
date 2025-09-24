@@ -19,7 +19,8 @@ import {
     MenuItem, 
     InputGroup,
     InputLeftElement,
-    Input
+    Input,
+    Tag
 } from "@chakra-ui/react";
 import { MdOutlineEdit } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
@@ -152,7 +153,7 @@ const Events = () => {
                 </div>
                 <Box>
                     <Text fontWeight="medium" textTransform={"uppercase"} fontSize={"14px"} color="gray.700">{userName}</Text>
-                    <Text fontWeight="medium" textTransform={"lowercase"} fontSize={"14px"} color="gray.600">{userRole}</Text>
+                    <Tag colorScheme="red" size="sm">{userRole}</Tag>
                 </Box>
             </Flex>
             <Menu>
