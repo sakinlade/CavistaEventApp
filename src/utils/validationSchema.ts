@@ -41,6 +41,9 @@ export const EventSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, 'Event name must be at least 2 characters')
     .required('Event name is required'),
+  message: Yup.string()
+    .min(24, 'Event message must be at least 24 characters')
+    .required('Event message is required'),
 });
 
 export const ChangeRoleSchema = Yup.object().shape({

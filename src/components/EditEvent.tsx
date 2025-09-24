@@ -14,32 +14,34 @@ import request from '../utils/httpsRequest';
 import { useUserAuthContext } from '../context/user/user.hook';
 import { EventSchema } from '../utils/validationSchema';
 import toast from 'react-hot-toast';
+import type { Event } from '../utils/types';
 
-interface AddEventProps {
+interface EditEventProps {
   isOpen: boolean;
+  event: Event | null;
   onClose: () => void;
   fetchingEvents: () => void;
 }
 
-const AddEvent = ({ isOpen, onClose, fetchingEvents }: AddEventProps) => {
+const EditEvent = ({ isOpen, onClose, fetchingEvents, event }: EditEventProps) => {
 
   const { token } = useUserAuthContext();
   const initialValues = {
-    name: '',
-    message: ''
+    name: event?.name || '',
+    message: event?.message ||  ''
   }
 
   const handleSubmit = async (values: typeof initialValues) => {
     try {
-      const response = await request({ token }).post('/api/Events', values);
+      const response = await request({ token }).put(`/api/Events/${event?.id}`, values);
       if (response && response.status === 200) {
-        toast.success('Event added successfully!');
+        toast.success('Event updated successfully!');
         fetchingEvents();
         onClose();
       }
     } catch (error) {
-      console.error('Failed to add event:', error);
-      toast.error('Failed to add event. Please try again.');
+      console.error('Failed to update event:', error);
+      toast.error('Failed to update event. Please try again.');
     }
   }
 
@@ -47,7 +49,7 @@ const AddEvent = ({ isOpen, onClose, fetchingEvents }: AddEventProps) => {
     <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>Add Event</ModalHeader>
+            <ModalHeader>Edit Event</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
             <Formik
@@ -126,4 +128,4 @@ const AddEvent = ({ isOpen, onClose, fetchingEvents }: AddEventProps) => {
   )
 }
 
-export default AddEvent
+export default EditEvent

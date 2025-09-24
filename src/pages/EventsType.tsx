@@ -24,6 +24,7 @@ import { useUserAuthContext } from "../context/user/user.hook";
 import type { Event, EventResponse } from "../utils/types";
 import AddEvent from "../components/AddEvent";
 import DeleteModal from "../components/DeleteModal";
+import EditEvent from "../components/EditEvent";
 
 const Events = () => {
 
@@ -32,7 +33,9 @@ const Events = () => {
     const { isOpen, onClose, onOpen } = useDisclosure();
     const [events, setEvents] = useState<EventResponse | null>(null);
     const [deletingEventId, setDeletingEventId] = useState<number>();
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const { isOpen: isDeleteModalOpen, onClose: onDeleteModalClose, onOpen: onDeleteModalOpen } = useDisclosure();
+    const { isOpen: isEditModalOpen, onClose: onEditModalClose, onOpen: onEditModalOpen } = useDisclosure();
 
     const fetchingEvents = async () => {
         setIsLoading(true);
@@ -94,8 +97,9 @@ const Events = () => {
                 <Table variant='simple' border={"1px solid #edf2f7"}>
                     <Thead>
                         <Tr>
-                            <Th>ID</Th>
+                            <Th>S/N</Th>
                             <Th>Name</Th>
+                            <Th>Message</Th>
                             <Th>Status</Th>
                             <Th>Action</Th>
                         </Tr>
@@ -122,10 +126,13 @@ const Events = () => {
                                 </td>
                             </tr>
                         ) : (
-                            events?.data?.map((event: Event) => (
-                                <Tr key={event.id}>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.id}</Td>
-                                    <Td  className="text-sm font-medium text-gray-700">{event.name}</Td>
+                            events?.data?.map((event: Event, index: number) => (
+                                <Tr key={index}>
+                                    <Td className="text-sm font-medium text-gray-700">{index + 1}</Td>
+                                    <Td className="text-sm font-medium text-gray-700">{event.name}</Td>
+                                    <Td noOfLines={1} className="text-sm font-medium text-gray-700 max-w-sm">
+                                        <span className="">{event.message}</span>
+                                    </Td>
                                     <Td className="text-sm font-medium text-gray-700">
                                         <Badge colorScheme={"green"} variant="subtle">
                                             Active
@@ -139,14 +146,24 @@ const Events = () => {
                                                 </svg>
                                             </MenuButton>
                                             <MenuList>
-                                                <MenuItem className="text-sm font-medium text-gray-700">Edit</MenuItem>
+                                                <MenuItem 
+                                                onClick={
+                                                    () => {
+                                                    setSelectedEvent(event);
+                                                    onEditModalOpen();
+                                                }}
+                                                className="text-sm font-medium text-gray-700">
+                                                    Edit
+                                                </MenuItem>
                                                 <MenuItem  
                                                 className="text-sm font-medium text-gray-700" 
                                                 color="red.500" 
                                                 onClick={() => {
                                                     setDeletingEventId(event.id);
                                                     onDeleteModalOpen();
-                                                }}>Delete</MenuItem>
+                                                }}>
+                                                    Delete
+                                                </MenuItem>
                                             </MenuList>
                                         </Menu>
                                     </Td>
@@ -160,6 +177,12 @@ const Events = () => {
         </main>
 
         <AddEvent isOpen={isOpen} onClose={onClose} fetchingEvents={fetchingEvents} />
+        <EditEvent 
+        isOpen={isEditModalOpen} 
+        onClose={onEditModalClose} 
+        fetchingEvents={fetchingEvents} 
+        event={selectedEvent}
+         />
         <DeleteModal 
         title="Delete Event"
         isLoading={isLoading}

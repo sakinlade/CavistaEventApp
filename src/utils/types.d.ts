@@ -28,6 +28,7 @@ export interface EmployeeResponse {
 export interface Event {
   id: number;
   name: string;
+  message: string;
   isDepricated: boolean;
 }
 export interface EventResponse {
