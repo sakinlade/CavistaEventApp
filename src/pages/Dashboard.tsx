@@ -8,10 +8,10 @@ import toast from 'react-hot-toast';
 
 // Mock data for recent activities
 const recentActivities = [
-    { id: 1, user: "Alex Johnson", action: "added a new employee", time: "2 hours ago" },
-    { id: 2, user: "Maria Garcia", action: "updated event details", time: "Yesterday" },
-    { id: 3, user: "Sam Lee", action: "modified role permissions", time: "2 days ago" },
-    { id: 4, user: "Taylor Swift", action: "bulk uploaded 15 employees", time: "3 days ago" }
+    { id: 1, user: "Spark Hub", action: "added a new employee", time: "2 hours ago" },
+    { id: 2, user: "Abdul Shehu", action: "updated event details", time: "Yesterday" },
+    { id: 3, user: "Solomon Akinlade", action: "modified role permissions", time: "2 days ago" },
+    { id: 4, user: "Spark Hub", action: "bulk uploaded 15 employees", time: "3 days ago" }
 ];
 
 const Dashboard = () => {

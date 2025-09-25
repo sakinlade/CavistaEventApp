@@ -21,23 +21,25 @@ function App() {
     <Routes>
       <Route element={<Login />} path='/' />
       <Route element={<Register />} path='/register' />
-      <Route element={<Events />} path='/events' />
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='User'/>}>
+        <Route path="events" element={<Events />} />
+      </Route>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="dashboard" element={<Dashboard />} />
       </Route>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="employee-management" element={<EmployeeManagement />} />
       </Route>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="event-types" element={<EventTypes />} />
       </Route>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="employee-events" element={<EmployeeEvents />} />
       </Route>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="role-management" element={<RoleManagement />} />
       </Route>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute role='SuperAdmin'/>}>
         <Route path="user-management" element={<UserManagement />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
