@@ -23,6 +23,7 @@ import { GoTrash } from "react-icons/go";
 import type { Role } from '../utils/types';
 import EditRole from '../components/EditRole';
 import Pagination from '../components/Pagination';
+import AddUser from '../components/AddUser';
 
 interface User {
     id: string;
@@ -52,6 +53,7 @@ const UserManagement = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [roles, setRoles] = useState<Role[]>([]);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isEditRoleOpen, onOpen: onEditRoleOpen, onClose: onEditRoleClose } = useDisclosure();
 
     const fetchUsers = async (page: number = 1, size: number = 10, search: string = '') => {
@@ -130,6 +132,7 @@ const UserManagement = () => {
                             Search
                         </Button>
                         <Button 
+                            onClick={onOpen}
                             variant="outline" 
                             border={"1px solid red"}
                             color={"red.500"}
@@ -264,14 +267,19 @@ const UserManagement = () => {
                         />
                     )}
                 </div>
+                <AddUser 
+                isOpen={isOpen}
+                onClose={onClose}
+                refreshAction={() => fetchUsers(1, 10, "")}
+                />
+                <EditRole 
+                isOpen={isEditRoleOpen} 
+                onClose={onEditRoleClose} 
+                roles={roles} 
+                refetching={fetchUsers} 
+                selectedUserId={selectedUserId}
+                />
             </main>
-            <EditRole 
-            isOpen={isEditRoleOpen} 
-            onClose={onEditRoleClose} 
-            roles={roles} 
-            refetching={fetchUsers} 
-            selectedUserId={selectedUserId}
-            />
         </div>
     )
 }
