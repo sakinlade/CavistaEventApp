@@ -184,7 +184,7 @@ const Dashboard = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {stats?.eventsForTheWeek?.map((event: any, index: number) => (
+                                                {stats?.eventsForTheWeek?.slice(0, 5)?.map((event: any, index: number) => (
                                                     <tr key={index}>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event?.employeeFirstName} {event?.employeeLastName}</td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{event.eventDate}</td>

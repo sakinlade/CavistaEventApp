@@ -41,14 +41,16 @@ const AddEmployeeEvent = ({ isOpen, onClose, fetchingEvents, events, employees }
                 eventDate: values.eventDate,
             }
           const response = await request({ token }).post('/api/EmployeeEvents', payload);
-          if (response && response.status === 200) {
+          if (response && response.data.isSuccessful) {
             toast.success('Event added successfully!');
             fetchingEvents();
             onClose();
+          } else {
+            toast.error(response.data.errorMessage || 'Failed to add event. Please try again.');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to add event:', error);
-          toast.error('Failed to add event. Please try again.');
+          toast.error(error.response?.data?.errorMessage || 'Failed to add event. Please try again.');
         }
     }
 

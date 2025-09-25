@@ -8,14 +8,12 @@ import toast from 'react-hot-toast';
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Grid,
   GridItem,
-  Heading,
   Input,
   InputGroup,
   InputRightElement,
@@ -27,6 +25,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { LuSparkles } from 'react-icons/lu';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -37,7 +36,6 @@ const Register = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      agreeToTerms: false,
     };
 
     const handleSubmit = async (values: RegisterFormValues) => {
@@ -49,20 +47,20 @@ const Register = () => {
             password: values.password,
         }
         try {
-            const response = await request({token: ''}).post('/api/Auth/Signup', payload);
-            if(response && response.status === 200){
-                toast.success(response.data.message || 'Registration successful! You can now log in.');
-                navigate('/');
-            }
+          const response = await request({token: ''}).post('/api/Auth/Signup', payload);
+          if(response && response.status === 200){
+            toast.success(response.data.message || 'Registration successful! You can now log in.');
+            navigate('/');
+          }
         } catch (error) {
-            toast.error('Registration failed. Please try again.');
+          toast.error('Registration failed. Please try again.');
         }
     };
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const formBackground = useColorModeValue("white", "gray.700");
-  const brandColor = useColorModeValue("blue.500", "blue.200");
+  const brandColor = useColorModeValue("red.500", "red.200");
   
   return (
     <Flex
@@ -74,9 +72,13 @@ const Register = () => {
     >
       <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
         <Stack align="center">
-          <Heading fontSize="4xl" textAlign="center">
-            Create your account
-          </Heading>
+          <div className="flex items-center justify-center space-x-2">
+            <LuSparkles className='text-red-600 w-8 h-8' />
+            <Text className="text-red-600 text-2xl font-semibold">SparkHub</Text>
+          </div>
+          <Text fontSize="lg" color="gray.600">
+            Create a new account to get started!
+          </Text>
         </Stack>
         <Box
           rounded="lg"
@@ -213,7 +215,7 @@ const Register = () => {
                     <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl isInvalid={!!errors.agreeToTerms && touched.agreeToTerms}>
+                  {/* <FormControl isInvalid={!!errors.agreeToTerms && touched.agreeToTerms}>
                     <Flex alignItems="start">
                       <Checkbox
                         id="agreeToTerms"
@@ -235,7 +237,7 @@ const Register = () => {
                       </Text>
                     </Flex>
                     <FormErrorMessage>{errors.agreeToTerms}</FormErrorMessage>
-                  </FormControl>
+                  </FormControl> */}
 
                   <Button
                     type="submit"

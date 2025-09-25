@@ -5,7 +5,6 @@ interface RegisterFormValues {
   userName: string;
   password: string;
   confirmPassword: string;
-  agreeToTerms: boolean;
 }
 
 export type { RegisterFormValues };

@@ -36,8 +36,8 @@ import AddStaffEvent from "../components/AddStaffEvent";
 import type { EmployeeEvent, EmployeeEventsResponse, EventResponse } from "../utils/types";
 import EditStaffEvent from "../components/EditStaffEvent";
 import DeleteModal from "../components/DeleteModal";
+import { LuSparkles } from "react-icons/lu";
 
-// 019967ec-0a5c-77f0-83a8-4a546161c95c
 const Events = () => {
 
     const navigate = useNavigate();
@@ -141,10 +141,10 @@ const Events = () => {
     bg={useColorModeValue("gray.50", "gray.800")}
     pb={10}>
       <Flex as="nav" align="center" justify="space-between" px={8} py={4} bg="white" boxShadow="sm">
-        <Flex align="center" gap={2}>
-          <img src="/vite.svg" alt="Logo" style={{ width: 36, height: 36 }} />
-          <Text fontWeight="bold" fontSize="xl" color="red.500">Spark Hub</Text>
-        </Flex>
+        <div className="flex items-center justify-center space-x-2">
+            <LuSparkles className='text-red-600 w-8 h-8' />
+            <Text className="text-xl text-red-500 font-bold">SparkHub</Text>
+        </div>
         <Flex align={"end"}>
             <Flex gap={3} align="center" mr={3}>
                 <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center">
@@ -213,9 +213,10 @@ const Events = () => {
                     <Table variant="simple" size="md">
                     <Thead bg="gray.50">
                         <Tr>
-                        <Th>S/N</Th>
                         <Th>Name</Th>
-                        <Th>Message</Th>
+                        <Th>Event Type</Th>
+                        <Th>Email</Th>
+                        <Th>Date</Th>
                         <Th>Status</Th>
                         <Th>Action</Th>
                         </Tr>

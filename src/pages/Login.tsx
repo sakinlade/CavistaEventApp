@@ -15,7 +15,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
   Stack,
   Text,
@@ -28,6 +27,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { jwtDecode } from 'jwt-decode';
+import { LuSparkles } from 'react-icons/lu';
 
 interface LoginFormValues {
   email: string;
@@ -81,7 +81,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = React.useState(false);
   const formBackground = useColorModeValue("white", "gray.700");
-  const brandColor = useColorModeValue("blue.500", "blue.200");
+  const brandColor = useColorModeValue("red.500", "red.200");
   
   return (
     <Flex
@@ -93,9 +93,10 @@ const Login = () => {
     >
       <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
         <Stack align="center">
-          <Heading fontSize="4xl" textAlign="center">
-            Staff Celebration
-          </Heading>
+          <div className="flex items-center justify-center space-x-2">
+            <LuSparkles className='text-red-600 w-8 h-8' />
+            <Text className="text-red-600 text-2xl font-semibold">SparkHub</Text>
+          </div>
           <Text fontSize="lg" color="gray.600">
             Welcome back! Sign in to your account
           </Text>

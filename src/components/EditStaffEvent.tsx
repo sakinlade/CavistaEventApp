@@ -41,14 +41,16 @@ const EditStaffEvent = ({ isOpen, onClose, fetchingEvents, events, selectedEvent
                 eventDate: values.eventDate,
             }
           const response = await request({ token }).put('/api/EmployeeEvents', payload);
-          if (response && response.status === 200) {
-            toast.success('Event updated successfully!');
+          if (response && response.data.isSuccessful) {
+            toast.success('Event added successfully!');
             fetchingEvents();
             onClose();
+          } else {
+            toast.error(response.data.errorMessage || 'Failed to add event. Please try again.');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to update event:', error);
-          toast.error('Failed to update event. Please try again.');
+          toast.error(error.response?.data?.errorMessage || 'Failed to update event. Please try again.');
         }
     }
 
